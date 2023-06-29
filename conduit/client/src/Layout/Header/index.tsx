@@ -1,27 +1,28 @@
 import React from 'react'
+import { NavLink } from 'react-router-dom'
 
 const Header: React.FC = () => {
   return (
     <nav className='navbar navbar-light'>
       <div className='container'>
-        <a className='navbar-brand' href='index.html'>
+        <NavLink className='navbar-brand' to='/'>
           conduit
-        </a>
+        </NavLink>
         <ul className='nav navbar-nav pull-xs-right'>
           <li className='nav-item'>
-            <a className='nav-link active' href='/'>
+            <NavLink className='nav-link' to='/'>
               Home
-            </a>
+            </NavLink>
           </li>
           <li className='nav-item'>
-            <a className='nav-link' href='/login'>
+            <NavLink className='nav-link' to='/login'>
               Sign in
-            </a>
+            </NavLink>
           </li>
           <li className='nav-item'>
-            <a className='nav-link' href='/register'>
+            <NavLink className='nav-link' to='/register'>
               Sign up
-            </a>
+            </NavLink>
           </li>
         </ul>
       </div>
