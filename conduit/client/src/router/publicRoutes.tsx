@@ -1,8 +1,11 @@
+import { Navigate } from 'react-router-dom'
 import Layout from '../Layout'
 import Home from '../pages/Home'
 import Login from '../pages/Login'
-import Profile from '../pages/Profile'
 import Register from '../pages/Register'
+import Settings from '../pages/Settings'
+import articleRoutes from './articleRoutes'
+import profileRoutes from './profileRoutes'
 
 const publicRoutes = [
   {
@@ -22,10 +25,16 @@ const publicRoutes = [
         element: <Register />
       },
       {
-        path: 'profile',
-        element: <Profile />
-      }
+        path: 'settings',
+        element: <Settings />
+      },
+      ...articleRoutes,
+      ...profileRoutes
     ]
+  },
+  {
+    path: '*',
+    element: <Navigate to='/' replace />
   }
 ]
 
