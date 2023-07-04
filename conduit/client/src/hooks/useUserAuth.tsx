@@ -1,7 +1,8 @@
 import { useMutation, useQueryClient } from 'react-query'
 import { useDispatch } from 'react-redux'
-import { setToken, setUserName } from '../store/user/userAuthSlice'
+import { setUser } from '../store/user/userAuthSlice'
 import request from '../utils/request'
+import { useState } from 'react'
 
 type User = {
   user: {
@@ -11,23 +12,24 @@ type User = {
   }
 }
 
-const registerUser = (data: User): Promise<any> =>
-  request.post('/users', data).then((res) => res.data)
-
 const useUserAuth = () => {
   const dispatch = useDispatch()
   const queryClient = useQueryClient()
+  const [registerErr, setRegisterErr] = useState(null)
+
+  const registerUser = (data: User): Promise<any> =>
+    request
+      .post('/users', data)
+      .then((res) => res.data)
+      .catch((err) => setRegisterErr(err))
 
   const registerMutation = useMutation(registerUser, {
     onSuccess: (data) => {
-      console.log('resData: ', data)
-
-      dispatch(setUserName(data.userName))
-      dispatch(setToken(data.token))
+      dispatch(setUser(data.user))
       queryClient.invalidateQueries({ queryKey: ['registerUser'] })
     }
   })
-  return { register: registerMutation }
+  return { registerUser: registerMutation, registerErr }
 }
 
 export default useUserAuth

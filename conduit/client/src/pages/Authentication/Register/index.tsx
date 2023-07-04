@@ -1,21 +1,41 @@
+import { SubmitHandler, useForm } from 'react-hook-form'
 import useUserAuth from '../../../hooks/useUserAuth'
-import { useState } from 'react'
+import FieldInput from '../../../components/Inputs/FieldInput'
+import { useSelector } from 'react-redux'
+import { RootState } from '../../../store'
+import fieldObjs from './registerData'
 
-const Register = () => {
-  const { register } = useUserAuth()
-  const [userName, setUserName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const hanldeSubmit = async (e: any) => {
-    e.preventDefault()
-    await register.mutateAsync({
-      user: {
-        username: userName,
-        email,
-        password
-      }
-    })
+type Inputs = {
+  user: {
+    username: string
+    email: string
+    password: string
   }
+}
+const Register = () => {
+  const { registerUser, registerErr } = useUserAuth()
+  const data = useSelector((state: RootState) => state.userAuth.value)
+  console.log('data: ', data)
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors }
+  } = useForm<Inputs>({
+    defaultValues: {
+      user: {
+        username: '',
+        email: '',
+        password: ''
+      }
+    }
+  })
+
+  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+    await registerUser.mutateAsync(data)
+  }
+
   return (
     <div className='auth-page'>
       <div className='container page'>
@@ -27,37 +47,26 @@ const Register = () => {
             </p>
 
             <ul className='error-messages'>
-              <li>That email is already taken</li>
+              {errors.user &&
+                Object.keys(errors.user as Record<string, any>).map((key) => (
+                  <li key={key}>
+                    {(errors.user as Record<string, any>)[key].message}
+                  </li>
+                ))}
+              {registerErr &&
+                Object.keys(registerErr).map((errKey: string) =>
+                  (registerErr[errKey] as string[]).map(
+                    (errMsg: string, i: number) => (
+                      <li key={`${errKey}-${i}`}>{`${errKey}: ${errMsg}`}</li>
+                    )
+                  )
+                )}
             </ul>
 
-            <form onSubmit={hanldeSubmit}>
-              <fieldset className='form-group'>
-                <input
-                  className='form-control form-control-lg'
-                  type='text'
-                  placeholder='Your Name'
-                  value={userName}
-                  onChange={(e: any) => setUserName(e.target.value)}
-                />
-              </fieldset>
-              <fieldset className='form-group'>
-                <input
-                  className='form-control form-control-lg'
-                  type='text'
-                  placeholder='Email'
-                  value={email}
-                  onChange={(e: any) => setEmail(e.target.value)}
-                />
-              </fieldset>
-              <fieldset className='form-group'>
-                <input
-                  className='form-control form-control-lg'
-                  type='password'
-                  placeholder='Password'
-                  value={password}
-                  onChange={(e: any) => setPassword(e.target.value)}
-                />
-              </fieldset>
+            <form onSubmit={handleSubmit(onSubmit)}>
+              {fieldObjs.map((fieldObj: any) => (
+                <FieldInput {...fieldObj} register={register} />
+              ))}
               <button className='btn btn-lg btn-primary pull-xs-right'>
                 Sign up
               </button>
