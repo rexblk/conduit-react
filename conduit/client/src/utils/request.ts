@@ -11,7 +11,7 @@ const request = axios.create({
 // Request interceptor
 request.interceptors.request.use(
   (config) => {
-    const token = store.getState().userAuth.value.user.token
+    const token = store.getState().userAuth.token
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }
@@ -28,7 +28,7 @@ request.interceptors.response.use(
     return response
   },
   (error) => {
-    return Promise.reject(error.response.data.errors)
+    return Promise.reject(error)
   }
 )
 

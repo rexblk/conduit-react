@@ -4,6 +4,7 @@ import FieldInput from '../../../components/Inputs/FieldInput'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../../store'
 import fieldObjs from './registerData'
+import { Link, useNavigate } from 'react-router-dom'
 
 type Inputs = {
   user: {
@@ -14,14 +15,16 @@ type Inputs = {
 }
 const Register = () => {
   const { registerUser, registerErr } = useUserAuth()
-  const data = useSelector((state: RootState) => state.userAuth.value)
+  const data = useSelector((state: RootState) => state.userAuth)
   console.log('data: ', data)
+  const navigate = useNavigate()
 
   const {
     register,
     handleSubmit,
     watch,
-    formState: { errors }
+    formState: { errors },
+    reset
   } = useForm<Inputs>({
     defaultValues: {
       user: {
@@ -29,11 +32,20 @@ const Register = () => {
         email: '',
         password: ''
       }
-    }
+    },
+    mode: 'onChange'
   })
 
-  const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    await registerUser.mutateAsync(data)
+  const onSubmit: SubmitHandler<Inputs> = (data) => {
+    registerUser.mutateAsync(data, {
+      onSuccess: () => {
+        reset()
+        navigate('/')
+      },
+      onError: (err) => {
+        console.error('submitErr: ', err)
+      }
+    })
   }
 
   return (
@@ -43,7 +55,7 @@ const Register = () => {
           <div className='col-md-6 offset-md-3 col-xs-12'>
             <h1 className='text-xs-center'>Sign up</h1>
             <p className='text-xs-center'>
-              <a href=''>Have an account?</a>
+              <Link to='/login'>Have an account?</Link>
             </p>
 
             <ul className='error-messages'>
@@ -53,7 +65,8 @@ const Register = () => {
                     {(errors.user as Record<string, any>)[key].message}
                   </li>
                 ))}
-              {registerErr &&
+              {registerUser.isError &&
+                registerErr &&
                 Object.keys(registerErr).map((errKey: string) =>
                   (registerErr[errKey] as string[]).map(
                     (errMsg: string, i: number) => (
@@ -67,8 +80,11 @@ const Register = () => {
               {fieldObjs.map((fieldObj: any) => (
                 <FieldInput {...fieldObj} register={register} />
               ))}
-              <button className='btn btn-lg btn-primary pull-xs-right'>
-                Sign up
+              <button
+                className='btn btn-lg btn-primary pull-xs-right'
+                disabled={registerUser.isLoading}
+              >
+                {registerUser.isLoading ? 'Loading...' : 'Sign up'}
               </button>
             </form>
           </div>
