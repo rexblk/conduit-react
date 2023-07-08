@@ -1,7 +1,13 @@
 import React from 'react'
+import { useSelector } from 'react-redux'
 import { NavLink } from 'react-router-dom'
+import { RootState } from '../../store'
+import { privateLinks, publicLinks } from './navLinks'
 
 const Header: React.FC = () => {
+  const { token } = useSelector((state: RootState) => state.userAuth)
+  const navLinks = token ? privateLinks : publicLinks
+
   return (
     <nav className='navbar navbar-light'>
       <div className='container'>
@@ -9,21 +15,13 @@ const Header: React.FC = () => {
           conduit
         </NavLink>
         <ul className='nav navbar-nav pull-xs-right'>
-          <li className='nav-item'>
-            <NavLink className='nav-link' to='/'>
-              Home
-            </NavLink>
-          </li>
-          <li className='nav-item'>
-            <NavLink className='nav-link' to='/login'>
-              Sign in
-            </NavLink>
-          </li>
-          <li className='nav-item'>
-            <NavLink className='nav-link' to='/register'>
-              Sign up
-            </NavLink>
-          </li>
+          {navLinks.map(({ to, name }) => (
+            <li className='nav-item'>
+              <NavLink className='nav-link' to={to}>
+                {name}
+              </NavLink>
+            </li>
+          ))}
         </ul>
       </div>
     </nav>
