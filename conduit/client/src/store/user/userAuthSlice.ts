@@ -32,11 +32,20 @@ export const userAuthSlice = createSlice({
     },
     setToken: (state, action: PayloadAction<string>) => {
       state.token = action.payload
+    },
+    logout: (state) => {
+      state.user = {
+        username: '',
+        image: '',
+        bio: '',
+        email: ''
+      }
+      state.token = null
     }
   }
 })
 
-export const { setToken, setUser } = userAuthSlice.actions
+export const { setToken, setUser, logout } = userAuthSlice.actions
 
 const userAuthReducer = userAuthSlice.reducer
 export default userAuthReducer

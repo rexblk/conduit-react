@@ -12,6 +12,13 @@ type User = {
   }
 }
 
+type Login = {
+  user: {
+    email: string
+    password: string
+  }
+}
+
 const useUserAuth = () => {
   const dispatch = useDispatch()
   const queryClient = useQueryClient()
@@ -26,6 +33,15 @@ const useUserAuth = () => {
         throw err
       })
 
+  const loginUser = (data: Login): Promise<any> =>
+    request
+      .post('/users/login', data)
+      .then((res) => res.data)
+      .catch((err) => {
+        setRegisterErr(err)
+        throw err
+      })
+
   const registerMutation = useMutation(registerUser, {
     onSuccess: (data) => {
       const { token, ...userWithoutToken } = data.user
@@ -34,7 +50,20 @@ const useUserAuth = () => {
       queryClient.invalidateQueries({ queryKey: ['registerUser'] })
     }
   })
-  return { registerUser: registerMutation, registerErr }
+
+  const loginMutation = useMutation(loginUser, {
+    onSuccess: (data) => {
+      const { token, ...userWithoutToken } = data.user
+      // dispatch(setUser(userWithoutToken))
+      dispatch(setToken(token))
+      queryClient.invalidateQueries({ queryKey: ['loginUser'] })
+    }
+  })
+  return {
+    registerUser: registerMutation,
+    loginUser: loginMutation,
+    registerErr
+  }
 }
 
 export default useUserAuth
