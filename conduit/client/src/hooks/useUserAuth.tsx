@@ -42,22 +42,19 @@ const useUserAuth = () => {
         throw err
       })
 
+  const handleSuccess = (data: any) => {
+    const { token, ...userWithoutToken } = data.user
+    dispatch(setUser(userWithoutToken))
+    dispatch(setToken(token))
+    queryClient.invalidateQueries({ queryKey: ['get-user'] })
+  }
+
   const registerMutation = useMutation(registerUser, {
-    onSuccess: (data) => {
-      const { token, ...userWithoutToken } = data.user
-      dispatch(setUser(userWithoutToken))
-      dispatch(setToken(token))
-      queryClient.invalidateQueries({ queryKey: ['registerUser'] })
-    }
+    onSuccess: handleSuccess
   })
 
   const loginMutation = useMutation(loginUser, {
-    onSuccess: (data) => {
-      const { token, ...userWithoutToken } = data.user
-      // dispatch(setUser(userWithoutToken))
-      dispatch(setToken(token))
-      queryClient.invalidateQueries({ queryKey: ['loginUser'] })
-    }
+    onSuccess: handleSuccess
   })
   return {
     registerUser: registerMutation,

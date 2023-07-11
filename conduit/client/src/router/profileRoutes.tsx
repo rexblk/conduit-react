@@ -1,5 +1,11 @@
 import Profile from '../pages/Profile'
 
+
+const profFunc = () => {
+  
+  return {}
+}
+
 const profileRoutes = [
   {
     path: 'username',
