@@ -2,10 +2,12 @@ import useProfile from '../../hooks/useProfile'
 
 const Profile = () => {
   const { userLoading, isUserError, userData, userError } = useProfile()
-  const {
-    user: { bio, image, email, username }
-  } = userData
-  console.log('userName: ', username)
+  let bio, image, email, username
+  if (userData && userData.user) {
+    ;({
+      user: { bio, image, email, username }
+    } = userData)
+  }
 
   return (
     <div className='profile-page'>
