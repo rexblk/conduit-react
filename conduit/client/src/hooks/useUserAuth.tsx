@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux'
 import { setToken, setUser } from '../store/user/userAuthSlice'
 import request from '../utils/request'
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 type User = {
   user: {
@@ -19,7 +20,8 @@ type Login = {
   }
 }
 
-const useUserAuth = () => {
+const useUserAuth = ({ reset }: any) => {
+  const navigate = useNavigate()
   const dispatch = useDispatch()
   const queryClient = useQueryClient()
   const [registerErr, setRegisterErr] = useState(null)
@@ -47,6 +49,8 @@ const useUserAuth = () => {
     dispatch(setUser(userWithoutToken))
     dispatch(setToken(token))
     queryClient.invalidateQueries({ queryKey: ['get-user'] })
+    reset()
+    navigate('/')
   }
 
   const registerMutation = useMutation(registerUser, {

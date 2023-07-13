@@ -1,25 +1,39 @@
+import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
+import { RootState } from '../../store'
+import ArticlePreview from '../../components/ArticlePreview'
+import useArticle from '../../hooks/useArticle'
 
 const Home = () => {
+  const { token } = useSelector((state: RootState) => state.userAuth)
+  const isAuth = !!token
+  const { articles } = useArticle({ limit: 2 })
+  console.log('aritcles: ', articles?.articles)
+  const articlesData = articles?.articles
+
   return (
     <div className='home-page'>
-      <div className='banner'>
-        <div className='container'>
-          <h1 className='logo-font'>conduit</h1>
-          <p>A place to share your knowledge.</p>
+      {!isAuth && (
+        <div className='banner'>
+          <div className='container'>
+            <h1 className='logo-font'>conduit</h1>
+            <p>A place to share your knowledge.</p>
+          </div>
         </div>
-      </div>
+      )}
 
       <div className='container page'>
         <div className='row'>
           <div className='col-md-9'>
             <div className='feed-toggle'>
               <ul className='nav nav-pills outline-active'>
-                <li className='nav-item'>
-                  <a className='nav-link disabled' href=''>
-                    Your Feed
-                  </a>
-                </li>
+                {isAuth && (
+                  <li className='nav-item'>
+                    <a className='nav-link disabled' href=''>
+                      Your Feed
+                    </a>
+                  </li>
+                )}
                 <li className='nav-item'>
                   <a className='nav-link active' href=''>
                     Global Feed
@@ -28,29 +42,12 @@ const Home = () => {
               </ul>
             </div>
 
-            <div className='article-preview'>
-              <div className='article-meta'>
-                <Link to='/profile'>
-                  <img src='http://i.imgur.com/Qr71crq.jpg' />
-                </Link>
-                <div className='info'>
-                  <a href='' className='author'>
-                    Eric Simons
-                  </a>
-                  <span className='date'>January 20th</span>
-                </div>
-                <button className='btn btn-outline-primary btn-sm pull-xs-right'>
-                  <i className='ion-heart'></i> 29
-                </button>
-              </div>
-              <a href='' className='preview-link'>
-                <h1>How to build webapps that scale</h1>
-                <p>This is the description for the post.</p>
-                <span>Read more...</span>
-              </a>
-            </div>
+            {articlesData &&
+              articlesData.map((article: any) => (
+                <ArticlePreview {...article} />
+              ))}
 
-            <div className='article-preview'>
+            {/* <div className='article-preview'>
               <div className='article-meta'>
                 <Link to='/profile'>
                   <img src='http://i.imgur.com/N4VcUeJ.jpg' />
@@ -73,7 +70,7 @@ const Home = () => {
                 <p>This is the description for the post.</p>
                 <span>Read more...</span>
               </a>
-            </div>
+            </div> */}
           </div>
 
           <div className='col-md-3'>

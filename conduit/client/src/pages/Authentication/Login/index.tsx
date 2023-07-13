@@ -1,7 +1,4 @@
-import { useNavigate } from 'react-router-dom'
 import useUserAuth from '../../../hooks/useUserAuth'
-import { RootState } from '../../../store'
-import { useSelector } from 'react-redux'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import loginObjs from './loginData'
 import FieldInput from '../../../components/Inputs/FieldInput'
@@ -14,11 +11,6 @@ type Inputs = {
 }
 
 const Login = () => {
-  const { loginUser, registerErr } = useUserAuth()
-  const data = useSelector((state: RootState) => state.userAuth)
-  console.log('data: ', data)
-  const navigate = useNavigate()
-
   const {
     register,
     handleSubmit,
@@ -35,17 +27,12 @@ const Login = () => {
     mode: 'onChange'
   })
 
+  const { loginUser, registerErr } = useUserAuth({ reset })
+
   const onSubmit: SubmitHandler<Inputs> = (data) => {
-    loginUser.mutateAsync(data, {
-      onSuccess: () => {
-        reset()
-        navigate('/')
-      },
-      onError: (err) => {
-        console.error('submitErr: ', err)
-      }
-    })
+    loginUser.mutateAsync(data)
   }
+
   return (
     <div className='auth-page'>
       <div className='container page'>
