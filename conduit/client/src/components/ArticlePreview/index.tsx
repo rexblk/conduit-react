@@ -11,7 +11,6 @@ const ArticlePreview = (props: any) => {
     tagList,
     title
   } = props
-  console.log('author: ', tagList)
 
   return (
     <div className='article-preview'>
