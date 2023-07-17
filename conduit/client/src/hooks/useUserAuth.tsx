@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux'
 import { setToken, setUser } from '../store/user/userAuthSlice'
 import request from '../utils/request'
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 type User = {
   user: {
@@ -12,7 +13,15 @@ type User = {
   }
 }
 
-const useUserAuth = () => {
+type Login = {
+  user: {
+    email: string
+    password: string
+  }
+}
+
+const useUserAuth = ({ reset }: any) => {
+  const navigate = useNavigate()
   const dispatch = useDispatch()
   const queryClient = useQueryClient()
   const [registerErr, setRegisterErr] = useState(null)
@@ -26,15 +35,36 @@ const useUserAuth = () => {
         throw err
       })
 
+  const loginUser = (data: Login): Promise<any> =>
+    request
+      .post('/users/login', data)
+      .then((res) => res.data)
+      .catch((err) => {
+        setRegisterErr(err)
+        throw err
+      })
+
+  const handleSuccess = (data: any) => {
+    const { token, ...userWithoutToken } = data.user
+    dispatch(setUser(userWithoutToken))
+    dispatch(setToken(token))
+    queryClient.invalidateQueries({ queryKey: ['get-user'] })
+    reset()
+    navigate('/')
+  }
+
   const registerMutation = useMutation(registerUser, {
-    onSuccess: (data) => {
-      const { token, ...userWithoutToken } = data.user
-      dispatch(setUser(userWithoutToken))
-      dispatch(setToken(token))
-      queryClient.invalidateQueries({ queryKey: ['registerUser'] })
-    }
+    onSuccess: handleSuccess
   })
-  return { registerUser: registerMutation, registerErr }
+
+  const loginMutation = useMutation(loginUser, {
+    onSuccess: handleSuccess
+  })
+  return {
+    registerUser: registerMutation,
+    loginUser: loginMutation,
+    registerErr
+  }
 }
 
 export default useUserAuth

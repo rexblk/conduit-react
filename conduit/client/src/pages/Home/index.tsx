@@ -1,113 +1,155 @@
+import { useSelector } from 'react-redux'
+import { RootState } from '../../store'
+import ArticlePreview from '../../components/ArticlePreview'
+import useArticle from '../../hooks/useArticle'
+import { useState } from 'react'
+import ReactPaginate from 'react-paginate'
 import { Link } from 'react-router-dom'
 
 const Home = () => {
+  const { token } = useSelector((state: RootState) => state.userAuth)
+  const isAuth = !!token
+  const [offset, setOffset] = useState(0)
+  const [tag, setTag] = useState()
+  const defaultActive = isAuth ? 'local' : 'global'
+  const [active, setActive] = useState(defaultActive)
+  const [currentPage, setCurrentPage] = useState(0)
+
+  const {
+    articles,
+    isArticlesLoading,
+    articlesLocal,
+    isLocalArticlesLoading,
+    isArticlesError,
+    articlesError,
+    tags,
+    isTagsLoading
+  } = useArticle({
+    limit: 10,
+    offset: offset,
+    tag: tag
+  })
+  const articlesData =
+    active === 'local' ? articlesLocal?.articles : articles?.articles
+
+  const pageCount = Math.ceil(
+    (active === 'local'
+      ? articlesLocal?.articlesCount
+      : articles?.articlesCount) / 10
+  )
+  const handlePageClick = (e: any) => {
+    setOffset(e.selected * 10)
+    setCurrentPage(e.selected)
+  }
+
+  const tabClick = (tag: any, tab: any) => {
+    setOffset(0)
+    setCurrentPage(0)
+    setTag(tag)
+    setActive(tab)
+  }
+
   return (
     <div className='home-page'>
-      <div className='banner'>
-        <div className='container'>
-          <h1 className='logo-font'>conduit</h1>
-          <p>A place to share your knowledge.</p>
+      {!isAuth && (
+        <div className='banner'>
+          <div className='container'>
+            <h1 className='logo-font'>conduit</h1>
+            <p>A place to share your knowledge.</p>
+          </div>
         </div>
-      </div>
+      )}
 
       <div className='container page'>
         <div className='row'>
           <div className='col-md-9'>
             <div className='feed-toggle'>
               <ul className='nav nav-pills outline-active'>
+                {isAuth && (
+                  <li className='nav-item'>
+                    <Link
+                      className={`nav-link ${
+                        active === 'local' ? 'active' : ''
+                      }`}
+                      onClick={() => tabClick(undefined, 'local')}
+                      to='/'
+                    >
+                      Your Feed
+                    </Link>
+                  </li>
+                )}
                 <li className='nav-item'>
-                  <a className='nav-link disabled' href=''>
-                    Your Feed
-                  </a>
-                </li>
-                <li className='nav-item'>
-                  <a className='nav-link active' href=''>
+                  <Link
+                    className={`nav-link ${
+                      active === 'global' ? 'active' : ''
+                    }`}
+                    onClick={() => tabClick(undefined, 'global')}
+                    to='/'
+                  >
                     Global Feed
-                  </a>
+                  </Link>
                 </li>
+                {tag && (
+                  <li className='nav-item'>
+                    <a className={`nav-link ${active === tag ? 'active' : ''}`}>
+                      <i className='ion-pound'></i>
+                      {tag}
+                    </a>
+                  </li>
+                )}
               </ul>
+              {(isArticlesLoading || isLocalArticlesLoading) && (
+                <p style={{ marginTop: '2rem' }}>Loading articles...</p>
+              )}
             </div>
 
-            <div className='article-preview'>
-              <div className='article-meta'>
-                <Link to='/profile'>
-                  <img src='http://i.imgur.com/Qr71crq.jpg' />
-                </Link>
-                <div className='info'>
-                  <a href='' className='author'>
-                    Eric Simons
-                  </a>
-                  <span className='date'>January 20th</span>
-                </div>
-                <button className='btn btn-outline-primary btn-sm pull-xs-right'>
-                  <i className='ion-heart'></i> 29
-                </button>
-              </div>
-              <a href='' className='preview-link'>
-                <h1>How to build webapps that scale</h1>
-                <p>This is the description for the post.</p>
-                <span>Read more...</span>
-              </a>
-            </div>
-
-            <div className='article-preview'>
-              <div className='article-meta'>
-                <Link to='/profile'>
-                  <img src='http://i.imgur.com/N4VcUeJ.jpg' />
-                </Link>
-                <div className='info'>
-                  <a href='' className='author'>
-                    Albert Pai
-                  </a>
-                  <span className='date'>January 20th</span>
-                </div>
-                <button className='btn btn-outline-primary btn-sm pull-xs-right'>
-                  <i className='ion-heart'></i> 32
-                </button>
-              </div>
-              <a href='' className='preview-link'>
-                <h1>
-                  The song you won't ever stop singing. No matter how hard you
-                  try.
-                </h1>
-                <p>This is the description for the post.</p>
-                <span>Read more...</span>
-              </a>
-            </div>
+            {articlesData &&
+              articlesData.map((article: any) => (
+                <ArticlePreview {...article} key={article?.slug} />
+              ))}
           </div>
 
           <div className='col-md-3'>
             <div className='sidebar'>
               <p>Popular Tags</p>
 
+              {isTagsLoading && <p>Loading tags...</p>}
+
               <div className='tag-list'>
-                <a href='' className='tag-pill tag-default'>
-                  programming
-                </a>
-                <a href='' className='tag-pill tag-default'>
-                  javascript
-                </a>
-                <a href='' className='tag-pill tag-default'>
-                  emberjs
-                </a>
-                <a href='' className='tag-pill tag-default'>
-                  angularjs
-                </a>
-                <a href='' className='tag-pill tag-default'>
-                  react
-                </a>
-                <a href='' className='tag-pill tag-default'>
-                  mean
-                </a>
-                <a href='' className='tag-pill tag-default'>
-                  node
-                </a>
-                <a href='' className='tag-pill tag-default'>
-                  rails
-                </a>
+                {tags &&
+                  tags.map((tagItem: any) => (
+                    <p
+                      className='tag-pill tag-default'
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => tabClick(tagItem, tagItem)}
+                    >
+                      {tagItem}
+                    </p>
+                  ))}
               </div>
             </div>
           </div>
+
+          <ReactPaginate
+            breakLabel='...'
+            nextLabel='next >'
+            onPageChange={handlePageClick}
+            pageRangeDisplayed={5}
+            pageCount={pageCount}
+            previousLabel='< previous'
+            renderOnZeroPageCount={null}
+            breakClassName='page-item'
+            breakLinkClassName='page-link'
+            containerClassName='pagination justify-content-center'
+            pageClassName='page-item'
+            pageLinkClassName='page-link'
+            previousClassName='page-item'
+            previousLinkClassName='page-link'
+            nextClassName='page-item'
+            nextLinkClassName='page-link'
+            activeClassName='active'
+            forcePage={currentPage}
+          />
         </div>
       </div>
     </div>

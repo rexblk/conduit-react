@@ -1,19 +1,26 @@
+import useProfile from '../../hooks/useProfile'
+
 const Profile = () => {
+  const { userLoading, isUserError, userData, userError } = useProfile()
+  let bio, image, email, username
+  if (userData && userData.user) {
+    ;({
+      user: { bio, image, email, username }
+    } = userData)
+  }
+
   return (
     <div className='profile-page'>
       <div className='user-info'>
         <div className='container'>
           <div className='row'>
             <div className='col-xs-12 col-md-10 offset-md-1'>
-              <img src='http://i.imgur.com/Qr71crq.jpg' className='user-img' />
-              <h4>Eric Simons</h4>
-              <p>
-                Cofounder @GoThinkster, lived in Aol's HQ for a few months,
-                kinda looks like Peeta from the Hunger Games
-              </p>
+              <img src={image} className='user-img' />
+              <h4>{username}</h4>
+              <p>{bio}</p>
               <button className='btn btn-sm btn-outline-secondary action-btn'>
                 <i className='ion-plus-round'></i>
-                &nbsp; Follow Eric Simons
+                &nbsp; Follow {username}
               </button>
             </div>
           </div>

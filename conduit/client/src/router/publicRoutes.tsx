@@ -3,9 +3,7 @@ import Layout from '../Layout'
 import Home from '../pages/Home'
 import Login from '../pages/Authentication/Login'
 import Register from '../pages/Authentication/Register'
-import Settings from '../pages/Settings'
 import articleRoutes from './articleRoutes'
-import profileRoutes from './profileRoutes'
 
 const publicRoutes = [
   {
@@ -24,12 +22,7 @@ const publicRoutes = [
         path: 'register',
         element: <Register />
       },
-      {
-        path: 'settings',
-        element: <Settings />
-      },
-      ...articleRoutes,
-      ...profileRoutes
+      articleRoutes[1]
     ]
   },
   {

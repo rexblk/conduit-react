@@ -1,4 +1,14 @@
+import { useDispatch } from 'react-redux'
+import { logout } from '../../store/user/userAuthSlice'
+import { useNavigate } from 'react-router-dom'
+
 const Settings = () => {
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const handleClick = () => {
+    dispatch(logout())
+    navigate('/')
+  }
   return (
     <div className='settings-page'>
       <div className='container page'>
@@ -49,7 +59,7 @@ const Settings = () => {
               </fieldset>
             </form>
             <hr />
-            <button className='btn btn-outline-danger'>
+            <button className='btn btn-outline-danger' onClick={handleClick}>
               Or click here to logout.
             </button>
           </div>

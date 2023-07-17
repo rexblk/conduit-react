@@ -1,10 +1,8 @@
 import { SubmitHandler, useForm } from 'react-hook-form'
 import useUserAuth from '../../../hooks/useUserAuth'
 import FieldInput from '../../../components/Inputs/FieldInput'
-import { useSelector } from 'react-redux'
-import { RootState } from '../../../store'
 import fieldObjs from './registerData'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 type Inputs = {
   user: {
@@ -14,11 +12,6 @@ type Inputs = {
   }
 }
 const Register = () => {
-  const { registerUser, registerErr } = useUserAuth()
-  const data = useSelector((state: RootState) => state.userAuth)
-  console.log('data: ', data)
-  const navigate = useNavigate()
-
   const {
     register,
     handleSubmit,
@@ -36,16 +29,10 @@ const Register = () => {
     mode: 'onChange'
   })
 
+  const { registerUser, registerErr } = useUserAuth({ reset })
+
   const onSubmit: SubmitHandler<Inputs> = (data) => {
-    registerUser.mutateAsync(data, {
-      onSuccess: () => {
-        reset()
-        navigate('/')
-      },
-      onError: (err) => {
-        console.error('submitErr: ', err)
-      }
-    })
+    registerUser.mutateAsync(data)
   }
 
   return (
