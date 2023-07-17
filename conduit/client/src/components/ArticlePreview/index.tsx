@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import dateConverter from '../../utils/dateConverter'
 
 const ArticlePreview = (props: any) => {
   const {
@@ -22,7 +23,7 @@ const ArticlePreview = (props: any) => {
           <a href='' className='author'>
             {author?.username}
           </a>
-          <span className='date'>{updatedAt}</span>
+          <span className='date'>{dateConverter(updatedAt)}</span>
         </div>
         <button className='btn btn-outline-primary btn-sm pull-xs-right'>
           {favorited && <i className='ion-heart'></i>} {favoritesCount}

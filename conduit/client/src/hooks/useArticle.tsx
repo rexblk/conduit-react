@@ -51,6 +51,7 @@ const useArticle = ({ tag, author, favorited, offset, limit }: ParamsType) => {
     articles,
     articlesError,
     isTagsLoading,
+    isTagsError,
     tags,
     tagsError
   }

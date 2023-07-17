@@ -25,7 +25,6 @@ const Home = () => {
     tag: tag
   })
   const articlesData = articles?.articles
-  console.log('offset: ', active)
   const pageCount = Math.ceil(articles?.articlesCount / 10)
   const handlePageClick = (e: any) => {
     setOffset(e.selected * 10)
@@ -98,6 +97,7 @@ const Home = () => {
                       className='tag-pill tag-default'
                       style={{ cursor: 'pointer' }}
                       onClick={() => {
+                        setOffset(0)
                         setTag(tagItem)
                         setActive(tagItem)
                       }}
