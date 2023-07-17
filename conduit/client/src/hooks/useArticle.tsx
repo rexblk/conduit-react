@@ -9,6 +9,11 @@ type ParamsType = {
   limit?: number
 }
 
+type LocalParamsType = {
+  offset?: number
+  limit?: number
+}
+
 const getArticles = (params: ParamsType) =>
   request
     .get('/articles', {
@@ -16,6 +21,14 @@ const getArticles = (params: ParamsType) =>
     })
     .then((res) => res.data)
     .catch((err) => console.error('getArticlesErr: ', err))
+
+const getLocalArticles = (params: LocalParamsType) =>
+  request
+    .get('/articles/feed', {
+      params
+    })
+    .then((res) => res.data)
+    .catch((err) => console.error('getLocalArticlesErr: ', err))
 
 const getTags = () =>
   request
@@ -39,6 +52,17 @@ const useArticle = ({ tag, author, favorited, offset, limit }: ParamsType) => {
   )
 
   const {
+    isLoading: isLocalArticlesLoading,
+    isError: isLocalArticlesError,
+    data: articlesLocal,
+    error: articlesErrorLocal
+  } = useQuery(
+    ['get-articles-local', { offset, limit }],
+    () => getLocalArticles({ offset, limit }),
+    { keepPreviousData: true }
+  )
+
+  const {
     isLoading: isTagsLoading,
     isError: isTagsError,
     data: tags,
@@ -50,6 +74,10 @@ const useArticle = ({ tag, author, favorited, offset, limit }: ParamsType) => {
     isArticlesError,
     articles,
     articlesError,
+    isLocalArticlesLoading,
+    isLocalArticlesError,
+    articlesLocal,
+    articlesErrorLocal,
     isTagsLoading,
     isTagsError,
     tags,

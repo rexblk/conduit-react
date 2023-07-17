@@ -4,17 +4,22 @@ import ArticlePreview from '../../components/ArticlePreview'
 import useArticle from '../../hooks/useArticle'
 import { useState } from 'react'
 import ReactPaginate from 'react-paginate'
+import { Link } from 'react-router-dom'
 
 const Home = () => {
   const { token } = useSelector((state: RootState) => state.userAuth)
   const isAuth = !!token
   const [offset, setOffset] = useState(0)
   const [tag, setTag] = useState()
-  const [active, setActive] = useState('global')
+  const defaultActive = isAuth ? 'local' : 'global'
+  const [active, setActive] = useState(defaultActive)
+  const [currentPage, setCurrentPage] = useState(0)
 
   const {
     articles,
     isArticlesLoading,
+    articlesLocal,
+    isLocalArticlesLoading,
     isArticlesError,
     articlesError,
     tags,
@@ -24,10 +29,24 @@ const Home = () => {
     offset: offset,
     tag: tag
   })
-  const articlesData = articles?.articles
-  const pageCount = Math.ceil(articles?.articlesCount / 10)
+  const articlesData =
+    active === 'local' ? articlesLocal?.articles : articles?.articles
+
+  const pageCount = Math.ceil(
+    (active === 'local'
+      ? articlesLocal?.articlesCount
+      : articles?.articlesCount) / 10
+  )
   const handlePageClick = (e: any) => {
     setOffset(e.selected * 10)
+    setCurrentPage(e.selected)
+  }
+
+  const tabClick = (tag: any, tab: any) => {
+    setOffset(0)
+    setCurrentPage(0)
+    setTag(tag)
+    setActive(tab)
   }
 
   return (
@@ -48,21 +67,27 @@ const Home = () => {
               <ul className='nav nav-pills outline-active'>
                 {isAuth && (
                   <li className='nav-item'>
-                    <a className='nav-link disabled' href=''>
+                    <Link
+                      className={`nav-link ${
+                        active === 'local' ? 'active' : ''
+                      }`}
+                      onClick={() => tabClick(undefined, 'local')}
+                      to='/'
+                    >
                       Your Feed
-                    </a>
+                    </Link>
                   </li>
                 )}
                 <li className='nav-item'>
-                  <a
+                  <Link
                     className={`nav-link ${
                       active === 'global' ? 'active' : ''
                     }`}
-                    onClick={() => setActive('global')}
-                    href=''
+                    onClick={() => tabClick(undefined, 'global')}
+                    to='/'
                   >
                     Global Feed
-                  </a>
+                  </Link>
                 </li>
                 {tag && (
                   <li className='nav-item'>
@@ -73,14 +98,14 @@ const Home = () => {
                   </li>
                 )}
               </ul>
-              {isArticlesLoading && (
+              {(isArticlesLoading || isLocalArticlesLoading) && (
                 <p style={{ marginTop: '2rem' }}>Loading articles...</p>
               )}
             </div>
 
             {articlesData &&
               articlesData.map((article: any) => (
-                <ArticlePreview {...article} />
+                <ArticlePreview {...article} key={article?.slug} />
               ))}
           </div>
 
@@ -96,11 +121,7 @@ const Home = () => {
                     <p
                       className='tag-pill tag-default'
                       style={{ cursor: 'pointer' }}
-                      onClick={() => {
-                        setOffset(0)
-                        setTag(tagItem)
-                        setActive(tagItem)
-                      }}
+                      onClick={() => tabClick(tagItem, tagItem)}
                     >
                       {tagItem}
                     </p>
@@ -127,6 +148,7 @@ const Home = () => {
             nextClassName='page-item'
             nextLinkClassName='page-link'
             activeClassName='active'
+            forcePage={currentPage}
           />
         </div>
       </div>

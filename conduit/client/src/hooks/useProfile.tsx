@@ -7,7 +7,6 @@ const useProfile = () => {
       .get('/user')
       .then((res) => res.data)
       .catch((err) => {
-        console.log('err: ', err)
         throw err
       })
 
