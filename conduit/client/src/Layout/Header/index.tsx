@@ -24,12 +24,25 @@ const Header: React.FC = () => {
           conduit
         </NavLink>
         <ul className='nav navbar-nav pull-xs-right'>
-          {navLinks.map(({ to, name }) => (
+          {navLinks.map(({ to, name, icon }) => (
             <li className='nav-item'>
               {to === '/username' ? (
                 <span className='nav-link'>{name}</span>
               ) : (
                 <NavLink className='nav-link' to={to}>
+                  {icon && (
+                    <>
+                      <i className={icon}></i>{' '}
+                    </>
+                  )}
+                  {name === userName && userData?.user?.image && (
+                    <>
+                      <img
+                        src={userData?.user?.image}
+                        style={{ height: '26px', borderRadius: '50px' }}
+                      />{' '}
+                    </>
+                  )}
                   {name}
                 </NavLink>
               )}
