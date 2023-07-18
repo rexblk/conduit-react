@@ -1,6 +1,15 @@
 import request from '../utils/request'
 import { useQuery } from 'react-query'
 
+type GlobalParamsType = {
+  tag?: string
+  author?: string
+  favorited?: string
+  offset?: number
+  limit?: number
+  slug?: string | null
+}
+
 type ParamsType = {
   tag?: string
   author?: string
@@ -30,6 +39,14 @@ const getLocalArticles = (params: LocalParamsType) =>
     .then((res) => res.data)
     .catch((err) => console.error('getLocalArticlesErr: ', err))
 
+const getArticle = (slug: any) => {
+  if (slug)
+    return request
+      .get(`/articles/${slug}`)
+      .then((res) => res.data)
+      .catch((err) => console.error('getArticleErr: ', err))
+}
+
 const getTags = () =>
   request
     .get('/tags')
@@ -39,7 +56,14 @@ const getTags = () =>
       throw err
     })
 
-const useArticle = ({ tag, author, favorited, offset, limit }: ParamsType) => {
+const useArticle = ({
+  tag,
+  author,
+  favorited,
+  offset,
+  limit,
+  slug
+}: GlobalParamsType) => {
   const {
     isLoading: isArticlesLoading,
     isError: isArticlesError,
@@ -69,6 +93,13 @@ const useArticle = ({ tag, author, favorited, offset, limit }: ParamsType) => {
     error: tagsError
   } = useQuery('get-tags', getTags)
 
+  const {
+    isLoading: isArticleLoading,
+    isError: isArticleError,
+    data: article,
+    error: articleError
+  } = useQuery(`get-article-${slug}`, () => getArticle(slug))
+
   return {
     isArticlesLoading,
     isArticlesError,
@@ -81,7 +112,10 @@ const useArticle = ({ tag, author, favorited, offset, limit }: ParamsType) => {
     isTagsLoading,
     isTagsError,
     tags,
-    tagsError
+    tagsError,
+    article,
+    articleError,
+    isArticleLoading
   }
 }
 

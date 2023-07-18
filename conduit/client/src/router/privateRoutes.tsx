@@ -18,7 +18,7 @@ const privateRoutes = [
         path: '/settings',
         element: <Settings />
       },
-      articleRoutes[0],
+      ...articleRoutes,
       ...profileRoutes
     ]
   },
