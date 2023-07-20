@@ -48,7 +48,9 @@ const useUserAuth = ({ reset }: any) => {
     const { token, ...userWithoutToken } = data.user
     dispatch(setUser(userWithoutToken))
     dispatch(setToken(token))
-    queryClient.invalidateQueries({ queryKey: ['get-user'] })
+    queryClient.invalidateQueries({
+      queryKey: ['get-user', 'get-articles-local']
+    })
     reset()
     navigate('/')
   }

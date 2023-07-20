@@ -4,6 +4,7 @@ import dateConverter from '../../utils/dateConverter'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../store'
 import Comments from '../../components/Comments'
+import useComment from '../../hooks/useComment'
 
 const Article = () => {
   const { slug } = useParams()
@@ -84,7 +85,7 @@ const Article = () => {
         </div>
 
         {isAuth ? (
-          <Comments />
+          <Comments slug={slug}/>
         ) : (
           <div className='row'>
             <div className='col-xs-12 col-md-8 offset-md-2'>
