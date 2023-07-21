@@ -1,17 +1,51 @@
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import useArticle from '../../hooks/useArticle'
 import dateConverter from '../../utils/dateConverter'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../store'
 import Comments from '../../components/Comments'
-import useComment from '../../hooks/useComment'
+import useProfile from '../../hooks/useProfile'
+import ArticleActions from './ArticleActions'
 
 const Article = () => {
   const { slug } = useParams()
+  const navigate = useNavigate()
+  const { follow, unfollow } = useProfile(slug)
+  const {
+    article: articleData,
+    isArticleLoading,
+    favorite,
+    unfavorite
+  } = useArticle({ slug })
   const { token } = useSelector((state: RootState) => state.userAuth)
   const isAuth = !!token
-  const { article: articleData, isArticleLoading } = useArticle({ slug })
   const article = articleData?.article
+  console.log('article: ', article)
+  const isFollowing = article?.author?.following
+  const isFavorite = article?.favorited
+
+  const handleFunc = async (
+    name: string,
+    bool: boolean,
+    func1: any,
+    func2: any
+  ) => {
+    if (func1?.isLoading || func2?.isLoading) return
+    if (isAuth) {
+      try {
+        if (bool) {
+          await func1.mutateAsync(name)
+        } else {
+          await func2.mutateAsync(name)
+        }
+      } catch (error) {
+        console.log('followFavoriteErr: ', error)
+      }
+    } else {
+      navigate('/register')
+    }
+  }
+
   return (
     <div className='article-page'>
       <div className='banner'>
@@ -28,14 +62,30 @@ const Article = () => {
               </a>
               <span className='date'>{dateConverter(article?.updatedAt)}</span>
             </div>
-            <button className='btn btn-sm btn-outline-secondary'>
+            <button
+              className='btn btn-sm btn-outline-secondary'
+              onClick={() =>
+                handleFunc(
+                  article?.author?.username,
+                  isFollowing,
+                  unfollow,
+                  follow
+                )
+              }
+            >
               <i className='ion-plus-round'></i>
-              &nbsp; Follow {article?.author?.username}
+              &nbsp; {isFollowing ? 'Unfollow' : 'Follow'}{' '}
+              {article?.author?.username}
             </button>
             &nbsp;&nbsp;
-            <button className='btn btn-sm btn-outline-primary'>
+            <button
+              className='btn btn-sm btn-outline-primary'
+              onClick={() =>
+                handleFunc(article?.slug, isFavorite, unfavorite, favorite)
+              }
+            >
               <i className='ion-heart'></i>
-              &nbsp; Favorite Post{' '}
+              &nbsp; {isFavorite ? 'Unfavorite' : 'Favorite'} Article{' '}
               <span className='counter'>{article?.favoritesCount}</span>
             </button>
           </div>
@@ -60,43 +110,19 @@ const Article = () => {
 
         <hr />
 
-        <div className='article-actions'>
-          <div className='article-meta'>
-            <a href='profile.html'>
-              <img src={article?.author?.image} />
-            </a>
-            <div className='info'>
-              <a href='' className='author'>
-                {article?.author?.username}
-              </a>
-              <span className='date'>{dateConverter(article?.updatedAt)}</span>
-            </div>
-            <button className='btn btn-sm btn-outline-secondary'>
-              <i className='ion-plus-round'></i>
-              &nbsp; Follow {article?.author?.username}
-            </button>
-            &nbsp;
-            <button className='btn btn-sm btn-outline-primary'>
-              <i className='ion-heart'></i>
-              &nbsp; Favorite Article{' '}
-              <span className='counter'>{article?.favoritesCount}</span>
-            </button>
-          </div>
-        </div>
+        <ArticleActions
+          article={article}
+          handleFunc={handleFunc}
+          dateConverter={dateConverter}
+          isFollowing={isFollowing}
+          unfollow={unfollow}
+          follow={follow}
+          isFavorite={isFavorite}
+          unfavorite={unfavorite}
+          favorite={favorite}
+        />
 
-        {isAuth ? (
-          <Comments slug={slug}/>
-        ) : (
-          <div className='row'>
-            <div className='col-xs-12 col-md-8 offset-md-2'>
-              <p>
-                <Link to='/login'>Sign in</Link> or{' '}
-                <Link to='/register'>Sign up</Link> to add comments on this
-                article.
-              </p>
-            </div>
-          </div>
-        )}
+        <Comments slug={slug} isAuth={isAuth} />
       </div>
     </div>
   )

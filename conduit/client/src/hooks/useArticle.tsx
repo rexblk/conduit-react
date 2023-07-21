@@ -1,5 +1,5 @@
 import request from '../utils/request'
-import { useQuery } from 'react-query'
+import { useMutation, useQuery, useQueryClient } from 'react-query'
 
 type GlobalParamsType = {
   tag?: string
@@ -56,6 +56,24 @@ const getTags = () =>
       throw err
     })
 
+const favoriteArticle = (slug: string) =>
+  request
+    .post(`/articles/${slug}/favorite`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error('favoriteArticle Err: ', err)
+      throw err
+    })
+
+const unfavoriteArticle = (slug: string) =>
+  request
+    .delete(`/articles/${slug}/favorite`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error('favoriteArticle Err: ', err)
+      throw err
+    })
+
 const useArticle = ({
   tag,
   author,
@@ -64,6 +82,7 @@ const useArticle = ({
   limit,
   slug
 }: GlobalParamsType) => {
+  const queryClient = useQueryClient()
   const {
     isLoading: isArticlesLoading,
     isError: isArticlesError,
@@ -83,7 +102,12 @@ const useArticle = ({
   } = useQuery(
     ['get-articles-local', { offset, limit }],
     () => getLocalArticles({ offset, limit }),
-    { keepPreviousData: true }
+    {
+      keepPreviousData: true,
+      refetchOnMount: true,
+      refetchOnReconnect: true,
+      refetchOnWindowFocus: true
+    }
   )
 
   const {
@@ -100,6 +124,21 @@ const useArticle = ({
     error: articleError
   } = useQuery(`get-article-${slug}`, () => getArticle(slug))
 
+  const handleSuccess = () => {
+    queryClient.invalidateQueries('get-articles-local')
+    if (slug !== undefined) {
+      queryClient.invalidateQueries(`get-article-${slug}`)
+    }
+  }
+
+  const favoriteMutation = useMutation(favoriteArticle, {
+    onSuccess: handleSuccess
+  })
+
+  const unfavoriteMutation = useMutation(unfavoriteArticle, {
+    onSuccess: handleSuccess
+  })
+
   return {
     isArticlesLoading,
     isArticlesError,
@@ -115,7 +154,9 @@ const useArticle = ({
     tagsError,
     article,
     articleError,
-    isArticleLoading
+    isArticleLoading,
+    favorite: favoriteMutation,
+    unfavorite: unfavoriteMutation
   }
 }
 

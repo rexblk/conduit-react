@@ -3,6 +3,7 @@ import useComment from '../../hooks/useComment'
 import useProfile from '../../hooks/useProfile'
 import dateConverter from '../../utils/dateConverter'
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 
 type Inputs = {
   comment: {
@@ -10,7 +11,7 @@ type Inputs = {
   }
 }
 
-const Comments = ({ slug }: any) => {
+const Comments = ({ slug, isAuth }: any) => {
   const [deletingCommentId, setDeletingCommentId] = useState<string | null>(
     null
   )
@@ -36,7 +37,6 @@ const Comments = ({ slug }: any) => {
   } = useComment({ slug })
   const comments = commentsData?.comments
   const user = userData?.user
-  console.log('userData: ', slug, comments)
 
   const onSubmit: SubmitHandler<Inputs> = async (data: any) => {
     try {
@@ -64,26 +64,41 @@ const Comments = ({ slug }: any) => {
     <>
       <div className='row'>
         <div className='col-xs-12 col-md-8 offset-md-2'>
-          <form className='card comment-form' onSubmit={handleSubmit(onSubmit)}>
-            <div className='card-block'>
-              <textarea
-                className='form-control'
-                placeholder='Write a comment...'
-                rows={3}
-                {...register('comment.body', { required: true })}
-              ></textarea>
-              {errors.comment && <span>This field is required</span>}
+          {isAuth ? (
+            <form
+              className='card comment-form'
+              onSubmit={handleSubmit(onSubmit)}
+            >
+              <div className='card-block'>
+                <textarea
+                  className='form-control'
+                  placeholder='Write a comment...'
+                  rows={3}
+                  {...register('comment.body', { required: true })}
+                ></textarea>
+                {errors.comment && <span>This field is required</span>}
+              </div>
+              <div className='card-footer'>
+                <img src={user?.image} className='comment-author-img' />
+                <button
+                  className='btn btn-sm btn-primary'
+                  disabled={createComment.isLoading}
+                >
+                  Post Comment
+                </button>
+              </div>
+            </form>
+          ) : (
+            <div className='row'>
+              <div className='col-xs-12 col-md-8 offset-md-2'>
+                <p>
+                  <Link to='/login'>Sign in</Link> or{' '}
+                  <Link to='/register'>Sign up</Link> to add comments on this
+                  article.
+                </p>
+              </div>
             </div>
-            <div className='card-footer'>
-              <img src={user?.image} className='comment-author-img' />
-              <button
-                className='btn btn-sm btn-primary'
-                disabled={createComment.isLoading}
-              >
-                Post Comment
-              </button>
-            </div>
-          </form>
+          )}
 
           {comments &&
             comments.length > 0 &&
@@ -93,16 +108,22 @@ const Comments = ({ slug }: any) => {
                   <p className='card-text'>{comment?.body}</p>
                 </div>
                 <div className='card-footer'>
-                  <a href='' className='comment-author'>
+                  <Link
+                    to={`/${comment?.author?.username}`}
+                    className='comment-author'
+                  >
                     <img
                       src={comment?.author?.image}
                       className='comment-author-img'
                     />
-                  </a>
+                  </Link>
                   &nbsp;
-                  <a href='' className='comment-author'>
+                  <Link
+                    to={`/${comment?.author?.username}`}
+                    className='comment-author'
+                  >
                     {comment?.author?.username}
-                  </a>
+                  </Link>
                   <span className='date-posted'>
                     {dateConverter(comment?.updatedAt)}
                   </span>

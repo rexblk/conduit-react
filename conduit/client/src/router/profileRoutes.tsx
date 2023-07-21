@@ -1,6 +1,5 @@
 import Profile from '../pages/Profile'
 
-
 const profileRoutes = [
   {
     path: ':username',
