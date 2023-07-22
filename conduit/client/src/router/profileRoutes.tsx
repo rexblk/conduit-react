@@ -1,9 +1,8 @@
 import Profile from '../pages/Profile'
 
-
 const profileRoutes = [
   {
-    path: ':username',
+    path: '/:username',
     element: <Profile />,
     children: [
       {

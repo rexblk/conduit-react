@@ -29,9 +29,7 @@ const Login = () => {
 
   const { loginUser, registerErr } = useUserAuth({ reset })
 
-  const onSubmit: SubmitHandler<Inputs> = (data) => {
-    loginUser.mutateAsync(data)
-  }
+  const onSubmit: SubmitHandler<Inputs> = (data) => loginUser.mutate(data)
 
   return (
     <div className='auth-page'>

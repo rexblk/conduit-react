@@ -1,28 +1,92 @@
+import { Link, useNavigate, useParams } from 'react-router-dom'
+import useArticle from '../../hooks/useArticle'
+import dateConverter from '../../utils/dateConverter'
+import { useSelector } from 'react-redux'
+import { RootState } from '../../store'
+import Comments from '../../components/Comments'
+import useProfile from '../../hooks/useProfile'
+import ArticleActions from './ArticleActions'
+
 const Article = () => {
+  const { slug } = useParams()
+  const navigate = useNavigate()
+  const { follow, unfollow } = useProfile(slug)
+  const {
+    article: articleData,
+    isArticleLoading,
+    favorite,
+    unfavorite
+  } = useArticle({ slug })
+  const { token } = useSelector((state: RootState) => state.userAuth)
+  const isAuth = !!token
+  const article = articleData?.article
+  console.log('article: ', article)
+  const isFollowing = article?.author?.following
+  const isFavorite = article?.favorited
+
+  const handleFunc = async (
+    name: string,
+    bool: boolean,
+    func1: any,
+    func2: any
+  ) => {
+    if (func1?.isLoading || func2?.isLoading) return
+    if (isAuth) {
+      try {
+        if (bool) {
+          await func1.mutateAsync(name)
+        } else {
+          await func2.mutateAsync(name)
+        }
+      } catch (error) {
+        console.log('followFavoriteErr: ', error)
+      }
+    } else {
+      navigate('/register')
+    }
+  }
+
   return (
     <div className='article-page'>
       <div className='banner'>
         <div className='container'>
-          <h1>How to build webapps that scale</h1>
+          <h1>{article?.title}</h1>
 
           <div className='article-meta'>
             <a href=''>
-              <img src='http://i.imgur.com/Qr71crq.jpg' />
+              <img src={article?.author?.image} />
             </a>
             <div className='info'>
               <a href='' className='author'>
-                Eric Simons
+                {article?.author?.username}
               </a>
-              <span className='date'>January 20th</span>
+              <span className='date'>{dateConverter(article?.updatedAt)}</span>
             </div>
-            <button className='btn btn-sm btn-outline-secondary'>
+            <button
+              className='btn btn-sm btn-outline-secondary'
+              onClick={() =>
+                handleFunc(
+                  article?.author?.username,
+                  isFollowing,
+                  unfollow,
+                  follow
+                )
+              }
+            >
               <i className='ion-plus-round'></i>
-              &nbsp; Follow Eric Simons <span className='counter'>(10)</span>
+              &nbsp; {isFollowing ? 'Unfollow' : 'Follow'}{' '}
+              {article?.author?.username}
             </button>
             &nbsp;&nbsp;
-            <button className='btn btn-sm btn-outline-primary'>
+            <button
+              className='btn btn-sm btn-outline-primary'
+              onClick={() =>
+                handleFunc(article?.slug, isFavorite, unfavorite, favorite)
+              }
+            >
               <i className='ion-heart'></i>
-              &nbsp; Favorite Post <span className='counter'>(29)</span>
+              &nbsp; {isFavorite ? 'Unfavorite' : 'Favorite'} Article{' '}
+              <span className='counter'>{article?.favoritesCount}</span>
             </button>
           </div>
         </div>
@@ -31,108 +95,34 @@ const Article = () => {
       <div className='container page'>
         <div className='row article-content'>
           <div className='col-md-12'>
-            <p>
-              Web development technologies have evolved at an incredible clip
-              over the past few years.
-            </p>
-            <h2 id='introducing-ionic'>Introducing RealWorld.</h2>
-            <p>It's a great solution for learning how other frameworks work.</p>
+            <p>{article?.description}</p>
           </div>
         </div>
+
+        <ul className='tag-list'>
+          {article?.tagList &&
+            article?.tagList.map((tag: string) => (
+              <li className='tag-default tag-pill tag-outline ng-binding ng-scope'>
+                {tag}
+              </li>
+            ))}
+        </ul>
 
         <hr />
 
-        <div className='article-actions'>
-          <div className='article-meta'>
-            <a href='profile.html'>
-              <img src='http://i.imgur.com/Qr71crq.jpg' />
-            </a>
-            <div className='info'>
-              <a href='' className='author'>
-                Eric Simons
-              </a>
-              <span className='date'>January 20th</span>
-            </div>
-            <button className='btn btn-sm btn-outline-secondary'>
-              <i className='ion-plus-round'></i>
-              &nbsp; Follow Eric Simons
-            </button>
-            &nbsp;
-            <button className='btn btn-sm btn-outline-primary'>
-              <i className='ion-heart'></i>
-              &nbsp; Favorite Article <span className='counter'>(29)</span>
-            </button>
-          </div>
-        </div>
+        <ArticleActions
+          article={article}
+          handleFunc={handleFunc}
+          dateConverter={dateConverter}
+          isFollowing={isFollowing}
+          unfollow={unfollow}
+          follow={follow}
+          isFavorite={isFavorite}
+          unfavorite={unfavorite}
+          favorite={favorite}
+        />
 
-        <div className='row'>
-          <div className='col-xs-12 col-md-8 offset-md-2'>
-            <form className='card comment-form'>
-              <div className='card-block'>
-                <textarea
-                  className='form-control'
-                  placeholder='Write a comment...'
-                  rows={3}
-                ></textarea>
-              </div>
-              <div className='card-footer'>
-                <img
-                  src='http://i.imgur.com/Qr71crq.jpg'
-                  className='comment-author-img'
-                />
-                <button className='btn btn-sm btn-primary'>Post Comment</button>
-              </div>
-            </form>
-
-            <div className='card'>
-              <div className='card-block'>
-                <p className='card-text'>
-                  With supporting text below as a natural lead-in to additional
-                  content.
-                </p>
-              </div>
-              <div className='card-footer'>
-                <a href='' className='comment-author'>
-                  <img
-                    src='http://i.imgur.com/Qr71crq.jpg'
-                    className='comment-author-img'
-                  />
-                </a>
-                &nbsp;
-                <a href='' className='comment-author'>
-                  Jacob Schmidt
-                </a>
-                <span className='date-posted'>Dec 29th</span>
-              </div>
-            </div>
-
-            <div className='card'>
-              <div className='card-block'>
-                <p className='card-text'>
-                  With supporting text below as a natural lead-in to additional
-                  content.
-                </p>
-              </div>
-              <div className='card-footer'>
-                <a href='' className='comment-author'>
-                  <img
-                    src='http://i.imgur.com/Qr71crq.jpg'
-                    className='comment-author-img'
-                  />
-                </a>
-                &nbsp;
-                <a href='' className='comment-author'>
-                  Jacob Schmidt
-                </a>
-                <span className='date-posted'>Dec 29th</span>
-                <span className='mod-options'>
-                  <i className='ion-edit'></i>
-                  <i className='ion-trash-a'></i>
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
+        <Comments slug={slug} isAuth={isAuth} />
       </div>
     </div>
   )

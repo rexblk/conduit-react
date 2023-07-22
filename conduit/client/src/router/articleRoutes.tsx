@@ -8,13 +8,13 @@ const articleRoutes = [
     element: <CreateArticle />,
     children: [
       {
-        path: 'article-slug',
+        path: ':slug',
         element: <EditArticle />
       }
     ]
   },
   {
-    path: 'article/article-slug',
+    path: 'article/:slug',
     element: <Article />
   }
 ]

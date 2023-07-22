@@ -1,7 +1,8 @@
 export const publicLinks = [
   {
     to: '/',
-    name: 'Home'
+    name: 'Home',
+    icon: null
   },
   {
     to: '/login',
@@ -20,11 +21,13 @@ export const privateLinks = [
   },
   {
     to: '/editor',
-    name: 'New Article'
+    name: 'New Article',
+    icon: 'ion-compose'
   },
   {
     to: '/settings',
-    name: 'Settings'
+    name: 'Settings',
+    icon: 'ion-gear-a'
   },
   {
     to: '/username',

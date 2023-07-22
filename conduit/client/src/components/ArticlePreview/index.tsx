@@ -18,18 +18,18 @@ const ArticlePreview = (props: any) => {
       <div className='article-meta'>
         <Link to='/profile'>
           <img src={author?.image} />
+          <div className='info'>
+            <a href='' className='author'>
+              {author?.username}
+            </a>
+            <span className='date'>{dateConverter(updatedAt)}</span>
+          </div>
         </Link>
-        <div className='info'>
-          <a href='' className='author'>
-            {author?.username}
-          </a>
-          <span className='date'>{dateConverter(updatedAt)}</span>
-        </div>
         <button className='btn btn-outline-primary btn-sm pull-xs-right'>
           {favorited && <i className='ion-heart'></i>} {favoritesCount}
         </button>
       </div>
-      <a href='' className='preview-link'>
+      <Link to={`/article/${slug}`} className='preview-link'>
         <h1>{title}</h1>
         <p>{description}</p>
         <span>Read more...</span>
@@ -41,7 +41,7 @@ const ArticlePreview = (props: any) => {
               </li>
             ))}
         </ul>
-      </a>
+      </Link>
     </div>
   )
 }

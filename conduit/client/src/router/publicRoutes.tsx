@@ -4,6 +4,7 @@ import Home from '../pages/Home'
 import Login from '../pages/Authentication/Login'
 import Register from '../pages/Authentication/Register'
 import articleRoutes from './articleRoutes'
+import profileRoutes from './profileRoutes'
 
 const publicRoutes = [
   {
@@ -22,7 +23,8 @@ const publicRoutes = [
         path: 'register',
         element: <Register />
       },
-      articleRoutes[1]
+      articleRoutes[1],
+      ...profileRoutes
     ]
   },
   {
