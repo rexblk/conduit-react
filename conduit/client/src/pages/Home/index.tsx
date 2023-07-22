@@ -27,11 +27,12 @@ const Home = () => {
   } = useArticle({
     limit: 10,
     offset: offset,
-    tag: tag
+    tag: tag,
+    token: token
   })
   const articlesData =
     active === 'local' ? articlesLocal?.articles : articles?.articles
-
+  const isLoading = isArticlesLoading || isLocalArticlesLoading
   const pageCount = Math.ceil(
     (active === 'local'
       ? articlesLocal?.articlesCount
@@ -98,8 +99,11 @@ const Home = () => {
                   </li>
                 )}
               </ul>
-              {(isArticlesLoading || isLocalArticlesLoading) && (
+              {isLoading && (
                 <p style={{ marginTop: '2rem' }}>Loading articles...</p>
+              )}
+              {articlesData?.length === 0 && !isLoading && (
+                <p style={{ marginTop: '2rem' }}>No articles here... yet.</p>
               )}
             </div>
 
@@ -130,26 +134,28 @@ const Home = () => {
             </div>
           </div>
 
-          <ReactPaginate
-            breakLabel='...'
-            nextLabel='next >'
-            onPageChange={handlePageClick}
-            pageRangeDisplayed={5}
-            pageCount={pageCount}
-            previousLabel='< previous'
-            renderOnZeroPageCount={null}
-            breakClassName='page-item'
-            breakLinkClassName='page-link'
-            containerClassName='pagination justify-content-center'
-            pageClassName='page-item'
-            pageLinkClassName='page-link'
-            previousClassName='page-item'
-            previousLinkClassName='page-link'
-            nextClassName='page-item'
-            nextLinkClassName='page-link'
-            activeClassName='active'
-            forcePage={currentPage}
-          />
+          {!isLoading && (
+            <ReactPaginate
+              breakLabel='...'
+              nextLabel='next >'
+              onPageChange={handlePageClick}
+              pageRangeDisplayed={5}
+              pageCount={pageCount}
+              previousLabel='< previous'
+              renderOnZeroPageCount={null}
+              breakClassName='page-item'
+              breakLinkClassName='page-link'
+              containerClassName='pagination justify-content-center'
+              pageClassName='page-item'
+              pageLinkClassName='page-link'
+              previousClassName='page-item'
+              previousLinkClassName='page-link'
+              nextClassName='page-item'
+              nextLinkClassName='page-link'
+              activeClassName='active'
+              forcePage={currentPage}
+            />
+          )}
         </div>
       </div>
     </div>

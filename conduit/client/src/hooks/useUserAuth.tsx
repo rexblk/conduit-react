@@ -46,13 +46,16 @@ const useUserAuth = ({ reset }: any) => {
 
   const handleSuccess = (data: any) => {
     const { token, ...userWithoutToken } = data.user
-    dispatch(setUser(userWithoutToken))
     dispatch(setToken(token))
+    dispatch(setUser(userWithoutToken))
     queryClient.invalidateQueries({
       queryKey: ['get-user', 'get-articles-local']
     })
     reset()
     navigate('/')
+    setTimeout(() => {
+      window.location.reload()
+    }, 1)
   }
 
   const registerMutation = useMutation(registerUser, {

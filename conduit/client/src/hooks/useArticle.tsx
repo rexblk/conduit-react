@@ -8,6 +8,7 @@ type GlobalParamsType = {
   offset?: number
   limit?: number
   slug?: string | null
+  token?: string | null
 }
 
 type ParamsType = {
@@ -80,7 +81,8 @@ const useArticle = ({
   favorited,
   offset,
   limit,
-  slug
+  slug,
+  token
 }: GlobalParamsType) => {
   const queryClient = useQueryClient()
   const {
@@ -90,8 +92,7 @@ const useArticle = ({
     error: articlesError
   } = useQuery(
     ['get-articles', { tag, author, favorited, offset, limit }],
-    () => getArticles({ tag, author, favorited, offset, limit }),
-    { keepPreviousData: true }
+    () => getArticles({ tag, author, favorited, offset, limit })
   )
 
   const {
@@ -99,15 +100,8 @@ const useArticle = ({
     isError: isLocalArticlesError,
     data: articlesLocal,
     error: articlesErrorLocal
-  } = useQuery(
-    ['get-articles-local', { offset, limit }],
-    () => getLocalArticles({ offset, limit }),
-    {
-      keepPreviousData: true,
-      refetchOnMount: true,
-      refetchOnReconnect: true,
-      refetchOnWindowFocus: true
-    }
+  } = useQuery(['get-articles-local', { offset, limit }], () =>
+    token ? getLocalArticles({ offset, limit }) : Promise.resolve(null)
   )
 
   const {
