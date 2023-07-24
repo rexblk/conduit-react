@@ -1,13 +1,16 @@
+import handleFollowFunc from '../../../utils/handleFollowFunc'
+
 const ArticleActions = ({
   article,
-  handleFunc,
   dateConverter,
   isFollowing,
   unfollow,
   follow,
   isFavorite,
   unfavorite,
-  favorite
+  favorite,
+  navigate,
+  isAuth
 }: any) => {
   return (
     <div className='article-actions'>
@@ -24,7 +27,14 @@ const ArticleActions = ({
         <button
           className='btn btn-sm btn-outline-secondary'
           onClick={() =>
-            handleFunc(article?.author?.username, isFollowing, unfollow, follow)
+            handleFollowFunc(
+              article?.author?.username,
+              isFollowing,
+              unfollow,
+              follow,
+              navigate,
+              isAuth
+            )
           }
         >
           <i className='ion-plus-round'></i>
@@ -35,7 +45,14 @@ const ArticleActions = ({
         <button
           className='btn btn-sm btn-outline-primary'
           onClick={() =>
-            handleFunc(article?.slug, isFavorite, unfavorite, favorite)
+            handleFollowFunc(
+              article?.slug,
+              isFavorite,
+              unfavorite,
+              favorite,
+              navigate,
+              isAuth
+            )
           }
         >
           <i className='ion-heart'></i>

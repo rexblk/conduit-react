@@ -1,12 +1,15 @@
 import { useDispatch } from 'react-redux'
 import { logout } from '../../store/user/userAuthSlice'
 import { useNavigate } from 'react-router-dom'
+import { useQueryClient } from 'react-query'
 
 const Settings = () => {
+  const queryClient = useQueryClient()
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const handleClick = () => {
     dispatch(logout())
+    queryClient.invalidateQueries('get-articles')
     navigate('/')
   }
   return (

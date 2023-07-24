@@ -6,6 +6,7 @@ import { RootState } from '../../store'
 import Comments from '../../components/Comments'
 import useProfile from '../../hooks/useProfile'
 import ArticleActions from './ArticleActions'
+import handleFollowFunc from '../../utils/handleFollowFunc'
 
 const Article = () => {
   const { slug } = useParams()
@@ -22,28 +23,6 @@ const Article = () => {
   const article = articleData?.article
   const isFollowing = article?.author?.following
   const isFavorite = article?.favorited
-
-  const handleFunc = async (
-    name: string,
-    bool: boolean,
-    func1: any,
-    func2: any
-  ) => {
-    if (func1?.isLoading || func2?.isLoading) return
-    if (isAuth) {
-      try {
-        if (bool) {
-          await func1.mutateAsync(name)
-        } else {
-          await func2.mutateAsync(name)
-        }
-      } catch (error) {
-        console.log('followFavoriteErr: ', error)
-      }
-    } else {
-      navigate('/register')
-    }
-  }
 
   return (
     <div className='article-page'>
@@ -64,11 +43,13 @@ const Article = () => {
             <button
               className='btn btn-sm btn-outline-secondary'
               onClick={() =>
-                handleFunc(
+                handleFollowFunc(
                   article?.author?.username,
                   isFollowing,
                   unfollow,
-                  follow
+                  follow,
+                  navigate,
+                  isAuth
                 )
               }
             >
@@ -80,7 +61,14 @@ const Article = () => {
             <button
               className='btn btn-sm btn-outline-primary'
               onClick={() =>
-                handleFunc(article?.slug, isFavorite, unfavorite, favorite)
+                handleFollowFunc(
+                  article?.slug,
+                  isFavorite,
+                  unfavorite,
+                  favorite,
+                  navigate,
+                  isAuth
+                )
               }
             >
               <i className='ion-heart'></i>
@@ -111,7 +99,6 @@ const Article = () => {
 
         <ArticleActions
           article={article}
-          handleFunc={handleFunc}
           dateConverter={dateConverter}
           isFollowing={isFollowing}
           unfollow={unfollow}
@@ -119,6 +106,8 @@ const Article = () => {
           isFavorite={isFavorite}
           unfavorite={unfavorite}
           favorite={favorite}
+          navigate={navigate}
+          isAuth={isAuth}
         />
 
         <Comments slug={slug} isAuth={isAuth} />

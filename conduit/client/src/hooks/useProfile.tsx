@@ -71,6 +71,9 @@ const useProfile = ({ slug, username }: ProfileTypes) => {
     if (slug !== undefined) {
       queryClient.invalidateQueries(`get-article-${slug}`)
     }
+    if (username) {
+      queryClient.invalidateQueries(`get-profile-${username}`)
+    }
   }
 
   const followMutation = useMutation(followUser, {
