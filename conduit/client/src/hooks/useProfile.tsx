@@ -1,5 +1,12 @@
+import { useSelector } from 'react-redux'
 import request from '../utils/request'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
+import { RootState } from '../store'
+
+type ProfileTypes = {
+  slug?: string
+  username?: string
+}
 
 const followUser = (username: string) =>
   request
@@ -19,7 +26,8 @@ const unFollowUser = (username: string) =>
       throw err
     })
 
-const useProfile = (slug?: string) => {
+const useProfile = ({ slug, username }: ProfileTypes) => {
+  const { token } = useSelector((state: RootState) => state.userAuth)
   const queryClient = useQueryClient()
   const getUser = () =>
     request
@@ -29,12 +37,34 @@ const useProfile = (slug?: string) => {
         throw err
       })
 
+  const getProfile = (username: any) => {
+    console.log('getProfile called...', username)
+    return request
+      .get(`/profiles/${username}`)
+      .then((res) => res.data)
+      .catch((err) => {
+        console.error('getProfileErr: ', err)
+        throw err
+      })
+  }
+
   const {
     isLoading: userLoading,
     isError: isUserError,
     data: userData,
     error: userError
-  } = useQuery('get-user', getUser)
+  } = useQuery('get-user', getUser, {
+    enabled: !!token
+  })
+
+  const {
+    isLoading: isProfileLoading,
+    isError: isProfileError,
+    data: profile,
+    error: profileError
+  } = useQuery(`get-profile-${username}`, () => getProfile(username), {
+    enabled: !!username
+  })
 
   const handleSuccess = () => {
     queryClient.invalidateQueries('get-articles-local')
@@ -57,7 +87,9 @@ const useProfile = (slug?: string) => {
     follow: followMutation,
     unfollow: unFollowMutation,
     userData,
-    userError
+    userError,
+    profile,
+    isProfileLoading
   }
 }
 

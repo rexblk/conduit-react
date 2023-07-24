@@ -1,26 +1,23 @@
+import { useParams } from 'react-router-dom'
 import useProfile from '../../hooks/useProfile'
 
 const Profile = () => {
-  const { userLoading, isUserError, userData, userError } = useProfile()
-  let bio, image, email, username
-  if (userData && userData.user) {
-    ;({
-      user: { bio, image, email, username }
-    } = userData)
-  }
-
+  const { username } = useParams()
+  const { profile: profileData } = useProfile({ username: username })
+  const profile = profileData?.profile
+  console.log(profile)
   return (
     <div className='profile-page'>
       <div className='user-info'>
         <div className='container'>
           <div className='row'>
             <div className='col-xs-12 col-md-10 offset-md-1'>
-              <img src={image} className='user-img' />
-              <h4>{username}</h4>
-              <p>{bio}</p>
+              <img src={profile?.image} className='user-img' />
+              <h4>{profile?.username}</h4>
+              <p>{profile?.bio}</p>
               <button className='btn btn-sm btn-outline-secondary action-btn'>
                 <i className='ion-plus-round'></i>
-                &nbsp; Follow {username}
+                &nbsp; Follow {profile?.username}
               </button>
             </div>
           </div>

@@ -42,7 +42,9 @@ const useComment = ({ slug }: any) => {
     isLoading: isCommentsLoading,
     isError: isCommentsError,
     error: commentsError
-  } = useQuery(`get-comments-${slug}`, () => getComments(slug))
+  } = useQuery(`get-comments-${slug}`, () => getComments(slug), {
+    enabled: !!slug
+  })
 
   const commentMutation = useMutation(createComment, {
     onSuccess: () => {

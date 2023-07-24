@@ -7,7 +7,7 @@ import useProfile from '../../hooks/useProfile'
 
 const Header: React.FC = () => {
   const { token } = useSelector((state: RootState) => state.userAuth)
-  const { userData } = useProfile()
+  const { userData } = useProfile({})
   const userName = userData?.user?.username
   if (userName) {
     privateLinks.splice(3, 1, {

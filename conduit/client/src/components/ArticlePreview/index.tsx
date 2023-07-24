@@ -16,7 +16,7 @@ const ArticlePreview = (props: any) => {
   return (
     <div className='article-preview'>
       <div className='article-meta'>
-        <Link to='/profile'>
+        <Link to={`/${author?.username}`}>
           <img src={author?.image} />
           <div className='info'>
             <a href='' className='author'>

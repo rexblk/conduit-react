@@ -10,7 +10,7 @@ import ArticleActions from './ArticleActions'
 const Article = () => {
   const { slug } = useParams()
   const navigate = useNavigate()
-  const { follow, unfollow } = useProfile(slug)
+  const { follow, unfollow } = useProfile({ slug: slug })
   const {
     article: articleData,
     isArticleLoading,
@@ -20,7 +20,6 @@ const Article = () => {
   const { token } = useSelector((state: RootState) => state.userAuth)
   const isAuth = !!token
   const article = articleData?.article
-  console.log('article: ', article)
   const isFollowing = article?.author?.following
   const isFavorite = article?.favorited
 

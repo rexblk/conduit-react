@@ -40,13 +40,11 @@ const getLocalArticles = (params: LocalParamsType) =>
     .then((res) => res.data)
     .catch((err) => console.error('getLocalArticlesErr: ', err))
 
-const getArticle = (slug: any) => {
-  if (slug)
-    return request
-      .get(`/articles/${slug}`)
-      .then((res) => res.data)
-      .catch((err) => console.error('getArticleErr: ', err))
-}
+const getArticle = (slug: any) =>
+  request
+    .get(`/articles/${slug}`)
+    .then((res) => res.data)
+    .catch((err) => console.error('getArticleErr: ', err))
 
 const getTags = () =>
   request
@@ -92,7 +90,8 @@ const useArticle = ({
     error: articlesError
   } = useQuery(
     ['get-articles', { tag, author, favorited, offset, limit }],
-    () => getArticles({ tag, author, favorited, offset, limit })
+    () => getArticles({ tag, author, favorited, offset, limit }),
+    { enabled: !slug }
   )
 
   const {
@@ -100,8 +99,12 @@ const useArticle = ({
     isError: isLocalArticlesError,
     data: articlesLocal,
     error: articlesErrorLocal
-  } = useQuery(['get-articles-local', { offset, limit }], () =>
-    token ? getLocalArticles({ offset, limit }) : Promise.resolve(null)
+  } = useQuery(
+    ['get-articles-local', { offset, limit }],
+    () => getLocalArticles({ offset, limit }),
+    {
+      enabled: !!token
+    }
   )
 
   const {
@@ -116,7 +119,9 @@ const useArticle = ({
     isError: isArticleError,
     data: article,
     error: articleError
-  } = useQuery(`get-article-${slug}`, () => getArticle(slug))
+  } = useQuery(`get-article-${slug}`, () => getArticle(slug), {
+    enabled: !!slug
+  })
 
   const handleSuccess = () => {
     queryClient.invalidateQueries('get-articles-local')
