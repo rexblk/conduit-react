@@ -1,4 +1,10 @@
-import { NavLink, useLocation, useNavigate, useParams } from 'react-router-dom'
+import {
+  Link,
+  NavLink,
+  useLocation,
+  useNavigate,
+  useParams
+} from 'react-router-dom'
 import useProfile from '../../hooks/useProfile'
 import useArticle from '../../hooks/useArticle'
 import { useState } from 'react'
@@ -21,7 +27,8 @@ const Profile = () => {
     profile: profileData,
     isProfileLoading,
     follow,
-    unfollow
+    unfollow,
+    userData
   } = useProfile({ username: username })
   const profile = profileData?.profile
   const { articles, isArticlesLoading } = useArticle({
@@ -35,12 +42,14 @@ const Profile = () => {
   const pageCount = Math.ceil(articles?.articlesCount / 10)
   const articlesData = articles?.articles
   const isFollowing = profile?.following
+  const isSameUser = userData?.user?.username === profile?.username
 
   const handlePageClick = (e: any) => {
     setOffset(e.selected * 10)
     setCurrentPage(e.selected)
   }
-  console.log('isFavorite: ', profile)
+  console.log('isFavorite: ', userData)
+
   return (
     <div className='profile-page'>
       <div className='user-info'>
@@ -50,22 +59,33 @@ const Profile = () => {
               <img src={profile?.image} className='user-img' />
               <h4>{profile?.username}</h4>
               <p>{profile?.bio}</p>
-              <button
-                className='btn btn-sm btn-outline-secondary action-btn'
-                onClick={() =>
-                  handleFollowFunc(
-                    profile?.username,
-                    isFollowing,
-                    unfollow,
-                    follow,
-                    navigate,
-                    isAuth
-                  )
-                }
-              >
-                <i className='ion-plus-round'></i>
-                &nbsp; {isFollowing ? 'Unfollow' : 'Follow'} {profile?.username}
-              </button>
+              {isSameUser ? (
+                <Link
+                  className='btn btn-sm btn-outline-secondary action-btn'
+                  to='/settings'
+                >
+                  <i className='ion-gear-a'></i>
+                  Edit Profile Settings
+                </Link>
+              ) : (
+                <button
+                  className='btn btn-sm btn-outline-secondary action-btn'
+                  onClick={() =>
+                    handleFollowFunc(
+                      profile?.username,
+                      isFollowing,
+                      unfollow,
+                      follow,
+                      navigate,
+                      isAuth
+                    )
+                  }
+                >
+                  <i className='ion-plus-round'></i>
+                  &nbsp; {isFollowing ? 'Unfollow' : 'Follow'}{' '}
+                  {profile?.username}
+                </button>
+              )}
             </div>
           </div>
         </div>
