@@ -1,4 +1,4 @@
-const loginObjs = [
+export const loginObjs = [
   {
     type: 'email',
     placeholder: 'Enter email',
@@ -29,4 +29,35 @@ const loginObjs = [
   }
 ]
 
-export default loginObjs
+export const settingsObjs = [
+  {
+    type: 'text',
+    placeholder: 'Update Image',
+    name: 'user.image',
+    validation: {}
+  },
+  {
+    type: 'text',
+    placeholder: 'Update Username',
+    name: 'user.username',
+    validation: {}
+  },
+  {
+    type: 'text',
+    placeholder: 'Update Bio',
+    name: 'user.bio',
+    validation: {}
+  },
+  {
+    type: 'email',
+    placeholder: 'Update Email',
+    name: 'user.email',
+    validation: {}
+  },
+  {
+    type: 'password',
+    placeholder: 'New Password',
+    name: 'user.password',
+    validation: {}
+  }
+]

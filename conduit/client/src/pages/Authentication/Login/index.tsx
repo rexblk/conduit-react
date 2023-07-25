@@ -1,6 +1,6 @@
 import useUserAuth from '../../../hooks/useUserAuth'
 import { SubmitHandler, useForm } from 'react-hook-form'
-import loginObjs from './loginData'
+import { loginObjs } from './loginData'
 import FieldInput from '../../../components/Inputs/FieldInput'
 
 type Inputs = {
@@ -60,8 +60,13 @@ const Login = () => {
             </ul>
 
             <form onSubmit={handleSubmit(onSubmit)}>
-              {loginObjs.map((loginObj: any) => (
-                <FieldInput {...loginObj} register={register} />
+              {loginObjs.map((loginObj: any, c: number) => (
+                <FieldInput
+                  {...loginObj}
+                  register={register}
+                  isLoading={loginUser?.isLoading}
+                  key={c}
+                />
               ))}
               <button
                 className='btn btn-lg btn-primary pull-xs-right'

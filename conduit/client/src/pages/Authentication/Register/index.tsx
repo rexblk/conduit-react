@@ -64,8 +64,13 @@ const Register = () => {
             </ul>
 
             <form onSubmit={handleSubmit(onSubmit)}>
-              {fieldObjs.map((fieldObj: any) => (
-                <FieldInput {...fieldObj} register={register} />
+              {fieldObjs.map((fieldObj: any, c: number) => (
+                <FieldInput
+                  {...fieldObj}
+                  register={register}
+                  isLoading={registerUser?.isLoading}
+                  key={c}
+                />
               ))}
               <button
                 className='btn btn-lg btn-primary pull-xs-right'

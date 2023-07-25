@@ -64,8 +64,7 @@ const Profile = () => {
                   className='btn btn-sm btn-outline-secondary action-btn'
                   to='/settings'
                 >
-                  <i className='ion-gear-a'></i>
-                  Edit Profile Settings
+                  <i className='ion-gear-a'></i> Edit Profile Settings
                 </Link>
               ) : (
                 <button
