@@ -1,17 +1,22 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import dateConverter from '../../utils/dateConverter'
+import handleFollowFunc from '../../utils/handleFollowFunc'
+import useArticle from '../../hooks/useArticle'
 
 const ArticlePreview = (props: any) => {
   const {
     author,
     updatedAt,
     description,
-    favorited,
     favoritesCount,
     slug,
     tagList,
-    title
+    title,
+    isAuth,
+    favorited
   } = props
+  const navigate = useNavigate()
+  const { favorite, unfavorite } = useArticle({ slug })
 
   return (
     <div className='article-preview'>
@@ -25,8 +30,20 @@ const ArticlePreview = (props: any) => {
             <span className='date'>{dateConverter(updatedAt)}</span>
           </div>
         </Link>
-        <button className='btn btn-outline-primary btn-sm pull-xs-right'>
-          {favorited && <i className='ion-heart'></i>} {favoritesCount}
+        <button
+          className='btn btn-outline-primary btn-sm pull-xs-right'
+          onClick={() =>
+            handleFollowFunc(
+              slug,
+              favorited,
+              unfavorite,
+              favorite,
+              navigate,
+              isAuth
+            )
+          }
+        >
+          <i className='ion-heart'></i> {favoritesCount}
         </button>
       </div>
       <Link to={`/article/${slug}`} className='preview-link'>

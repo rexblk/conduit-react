@@ -24,6 +24,15 @@ type LocalParamsType = {
   limit?: number
 }
 
+type ArtilceType = {
+  article: {
+    title: string
+    description: string
+    body: string
+    tagList: [string]
+  }
+}
+
 const getArticles = (params: ParamsType) =>
   request
     .get('/articles', {
@@ -70,6 +79,15 @@ const unfavoriteArticle = (slug: string) =>
     .then((res) => res.data)
     .catch((err) => {
       console.error('favoriteArticle Err: ', err)
+      throw err
+    })
+
+const publishArticle = (data: ArtilceType) =>
+  request
+    .post('/articles', data)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error('publishArticle Err: ', err)
       throw err
     })
 
@@ -127,6 +145,7 @@ const useArticle = ({
     queryClient.invalidateQueries('get-articles-local')
     if (slug !== undefined) {
       queryClient.invalidateQueries(`get-article-${slug}`)
+      queryClient.invalidateQueries('get-articles')
     }
   }
 
@@ -137,6 +156,8 @@ const useArticle = ({
   const unfavoriteMutation = useMutation(unfavoriteArticle, {
     onSuccess: handleSuccess
   })
+
+  const publishArticleMutation = useMutation(publishArticle)
 
   return {
     isArticlesLoading,
@@ -155,7 +176,8 @@ const useArticle = ({
     articleError,
     isArticleLoading,
     favorite: favoriteMutation,
-    unfavorite: unfavoriteMutation
+    unfavorite: unfavoriteMutation,
+    publishArticle: publishArticleMutation
   }
 }
 

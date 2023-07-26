@@ -118,7 +118,11 @@ const Profile = () => {
             {articlesData &&
               profile &&
               articlesData.map((article: any) => (
-                <ArticlePreview {...article} key={article?.slug} />
+                <ArticlePreview
+                  {...article}
+                  key={article?.slug}
+                  isAuth={isAuth}
+                />
               ))}
 
             {!isLoading && !isProfileLoading && (

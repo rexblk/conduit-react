@@ -61,3 +61,34 @@ export const settingsObjs = [
     validation: {}
   }
 ]
+
+export const articleObjs = [
+  {
+    type: 'text',
+    placeholder: 'Article Title',
+    name: 'article.title',
+    validation: { required: { value: true, message: 'Title is required.' } }
+  },
+  {
+    type: 'text',
+    placeholder: "What's this article about?",
+    name: 'article.description',
+    validation: {
+      required: { value: true, message: 'Description is required.' }
+    }
+  },
+  {
+    type: 'text',
+    placeholder: 'Write your article (in markdown)',
+    name: 'article.body',
+    validation: { required: { value: true, message: 'Body is required.' } }
+  },
+  {
+    type: 'text',
+    placeholder: 'Enter tags',
+    name: 'article.tagList',
+    validation: {
+      required: { value: true, message: 'Create at least one tag.' }
+    }
+  }
+]

@@ -8,7 +8,7 @@ const FieldInput = ({
 }: any) => {
   return (
     <fieldset className='form-group'>
-      {name === 'user.bio' ? (
+      {name === 'user.bio' || name === 'article.body' ? (
         <textarea
           disabled={isLoading}
           className='form-control form-control-lg'
