@@ -26,11 +26,8 @@ const CreateArticle = () => {
   } = useForm<Inputs>()
   const navigate = useNavigate()
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    console.log('clicked: ', data)
     data.article.tagList = data.article.tagList.split(/\s+/)
-    console.log('data: ', data)
     const res = await publishArticle.mutateAsync(data)
-    console.log('publishRes: ', res)
     if (res?.article?.slug) {
       queryClient.invalidateQueries('get-articles')
       navigate(`/article/${res?.article?.slug}`)

@@ -91,6 +91,15 @@ const publishArticle = (data: ArtilceType) =>
       throw err
     })
 
+const deleteArticle = (slug: string) =>
+  request
+    .delete(`/articles/${slug}`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error('deleteArticle Err: ', err)
+      throw err
+    })
+
 const useArticle = ({
   tag,
   author,
@@ -159,6 +168,12 @@ const useArticle = ({
 
   const publishArticleMutation = useMutation(publishArticle)
 
+  const deleteArticleMutation = useMutation(deleteArticle, {
+    onSuccess: () => {
+      queryClient.invalidateQueries('get-articles')
+    }
+  })
+
   return {
     isArticlesLoading,
     isArticlesError,
@@ -177,7 +192,8 @@ const useArticle = ({
     isArticleLoading,
     favorite: favoriteMutation,
     unfavorite: unfavoriteMutation,
-    publishArticle: publishArticleMutation
+    publishArticle: publishArticleMutation,
+    deleteArticle: deleteArticleMutation
   }
 }
 
