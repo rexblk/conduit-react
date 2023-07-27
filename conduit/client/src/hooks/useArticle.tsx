@@ -29,7 +29,7 @@ type ArtilceType = {
     title: string
     description: string
     body: string
-    tagList: [string]
+    tagList?: [string]
   }
 }
 
@@ -110,6 +110,16 @@ const useArticle = ({
   token
 }: GlobalParamsType) => {
   const queryClient = useQueryClient()
+
+  const updateArticle = (data: ArtilceType) =>
+    request
+      .put(`/articles/${slug}`, data)
+      .then((res) => res.data)
+      .catch((err) => {
+        console.error('updateArticleErr: ', err)
+        throw err
+      })
+
   const {
     isLoading: isArticlesLoading,
     isError: isArticlesError,
@@ -168,6 +178,12 @@ const useArticle = ({
 
   const publishArticleMutation = useMutation(publishArticle)
 
+  const updateArticleMutation = useMutation(updateArticle, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(`get-article-${slug}`)
+    }
+  })
+
   const deleteArticleMutation = useMutation(deleteArticle, {
     onSuccess: () => {
       queryClient.invalidateQueries('get-articles')
@@ -193,7 +209,8 @@ const useArticle = ({
     favorite: favoriteMutation,
     unfavorite: unfavoriteMutation,
     publishArticle: publishArticleMutation,
-    deleteArticle: deleteArticleMutation
+    deleteArticle: deleteArticleMutation,
+    updateArticle: updateArticleMutation
   }
 }
 

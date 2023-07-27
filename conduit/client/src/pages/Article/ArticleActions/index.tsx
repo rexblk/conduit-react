@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import handleFollowFunc from '../../../utils/handleFollowFunc'
 
 const ArticleActions = ({
@@ -27,13 +28,13 @@ const ArticleActions = ({
 
   return (
     <div className='article-meta'>
-      <a href='profile.html'>
+      <Link to={`/${article?.author?.username}`}>
         <img src={article?.author?.image} />
-      </a>
+      </Link>
       <div className='info'>
-        <a href='' className='author'>
+        <Link to={`/${article?.author?.username}`} className='author'>
           {article?.author?.username}
-        </a>
+        </Link>
         <span className='date'>{dateConverter(article?.updatedAt)}</span>
       </div>
       {isSameUser ? (

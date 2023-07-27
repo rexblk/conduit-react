@@ -4,8 +4,13 @@ const FieldInput = ({
   name,
   validation,
   register,
-  isLoading
+  isLoading,
+  tags = [],
+  slug = '',
+  handleClick
 }: any) => {
+  console.log('tags: ', tags)
+
   return (
     <fieldset className='form-group'>
       {name === 'user.bio' || name === 'article.body' ? (
@@ -22,8 +27,21 @@ const FieldInput = ({
           className='form-control form-control-lg'
           type={type}
           placeholder={placeholder}
-          {...register(name, { ...validation, message: 'enter email' })}
+          {...register(name, tags.length === 0 && validation)}
         />
+      )}
+      {name === 'article.tagList' && slug && (
+        <div className='tag-list'>
+          {tags.map((tag: string) => (
+            <span className='tag-default tag-pill ng-binding ng-scope'>
+              <i
+                className='ion-close-round'
+                onClick={() => handleClick(tag)}
+              ></i>{' '}
+              {tag}
+            </span>
+          ))}
+        </div>
       )}
     </fieldset>
   )
