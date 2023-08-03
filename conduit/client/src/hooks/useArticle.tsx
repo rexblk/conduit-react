@@ -24,6 +24,15 @@ type LocalParamsType = {
   limit?: number
 }
 
+type ArtilceType = {
+  article: {
+    title: string
+    description: string
+    body: string
+    tagList?: [string]
+  }
+}
+
 const getArticles = (params: ParamsType) =>
   request
     .get('/articles', {
@@ -40,13 +49,11 @@ const getLocalArticles = (params: LocalParamsType) =>
     .then((res) => res.data)
     .catch((err) => console.error('getLocalArticlesErr: ', err))
 
-const getArticle = (slug: any) => {
-  if (slug)
-    return request
-      .get(`/articles/${slug}`)
-      .then((res) => res.data)
-      .catch((err) => console.error('getArticleErr: ', err))
-}
+const getArticle = (slug: any) =>
+  request
+    .get(`/articles/${slug}`)
+    .then((res) => res.data)
+    .catch((err) => console.error('getArticleErr: ', err))
 
 const getTags = () =>
   request
@@ -75,6 +82,24 @@ const unfavoriteArticle = (slug: string) =>
       throw err
     })
 
+const publishArticle = (data: ArtilceType) =>
+  request
+    .post('/articles', data)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error('publishArticle Err: ', err)
+      throw err
+    })
+
+const deleteArticle = (slug: string) =>
+  request
+    .delete(`/articles/${slug}`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error('deleteArticle Err: ', err)
+      throw err
+    })
+
 const useArticle = ({
   tag,
   author,
@@ -85,6 +110,16 @@ const useArticle = ({
   token
 }: GlobalParamsType) => {
   const queryClient = useQueryClient()
+
+  const updateArticle = (data: ArtilceType) =>
+    request
+      .put(`/articles/${slug}`, data)
+      .then((res) => res.data)
+      .catch((err) => {
+        console.error('updateArticleErr: ', err)
+        throw err
+      })
+
   const {
     isLoading: isArticlesLoading,
     isError: isArticlesError,
@@ -92,7 +127,8 @@ const useArticle = ({
     error: articlesError
   } = useQuery(
     ['get-articles', { tag, author, favorited, offset, limit }],
-    () => getArticles({ tag, author, favorited, offset, limit })
+    () => getArticles({ tag, author, favorited, offset, limit }),
+    { enabled: !slug }
   )
 
   const {
@@ -100,8 +136,12 @@ const useArticle = ({
     isError: isLocalArticlesError,
     data: articlesLocal,
     error: articlesErrorLocal
-  } = useQuery(['get-articles-local', { offset, limit }], () =>
-    token ? getLocalArticles({ offset, limit }) : Promise.resolve(null)
+  } = useQuery(
+    ['get-articles-local', { offset, limit }],
+    () => getLocalArticles({ offset, limit }),
+    {
+      enabled: !!token
+    }
   )
 
   const {
@@ -116,12 +156,15 @@ const useArticle = ({
     isError: isArticleError,
     data: article,
     error: articleError
-  } = useQuery(`get-article-${slug}`, () => getArticle(slug))
+  } = useQuery(`get-article-${slug}`, () => getArticle(slug), {
+    enabled: !!slug
+  })
 
   const handleSuccess = () => {
     queryClient.invalidateQueries('get-articles-local')
     if (slug !== undefined) {
       queryClient.invalidateQueries(`get-article-${slug}`)
+      queryClient.invalidateQueries('get-articles')
     }
   }
 
@@ -131,6 +174,20 @@ const useArticle = ({
 
   const unfavoriteMutation = useMutation(unfavoriteArticle, {
     onSuccess: handleSuccess
+  })
+
+  const publishArticleMutation = useMutation(publishArticle)
+
+  const updateArticleMutation = useMutation(updateArticle, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(`get-article-${slug}`)
+    }
+  })
+
+  const deleteArticleMutation = useMutation(deleteArticle, {
+    onSuccess: () => {
+      queryClient.invalidateQueries('get-articles')
+    }
   })
 
   return {
@@ -150,7 +207,10 @@ const useArticle = ({
     articleError,
     isArticleLoading,
     favorite: favoriteMutation,
-    unfavorite: unfavoriteMutation
+    unfavorite: unfavoriteMutation,
+    publishArticle: publishArticleMutation,
+    deleteArticle: deleteArticleMutation,
+    updateArticle: updateArticleMutation
   }
 }
 

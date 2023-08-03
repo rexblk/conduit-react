@@ -29,7 +29,7 @@ const Comments = ({ slug, isAuth }: any) => {
     },
     mode: 'onChange'
   })
-  const { userLoading, isUserError, userData, userError } = useProfile()
+  const { userLoading, isUserError, userData, userError } = useProfile({})
   const {
     comments: commentsData,
     createComment,

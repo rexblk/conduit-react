@@ -1,14 +1,65 @@
 import { useDispatch } from 'react-redux'
 import { logout } from '../../store/user/userAuthSlice'
 import { useNavigate } from 'react-router-dom'
+import { useQueryClient } from 'react-query'
+import { SubmitHandler, useForm } from 'react-hook-form'
+import useProfile from '../../hooks/useProfile'
+import { settingsObjs } from '../Authentication/Login/loginData'
+import FieldInput from '../../components/Inputs/FieldInput'
+import { useEffect } from 'react'
+
+type Inputs = {
+  user: {
+    image?: string
+    username?: string
+    bio?: string
+    email?: string
+    password?: string
+  }
+}
 
 const Settings = () => {
+  const queryClient = useQueryClient()
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const handleClick = () => {
     dispatch(logout())
+    queryClient.invalidateQueries('get-articles')
     navigate('/')
   }
+
+  const { userData, updateUser } = useProfile({})
+  console.log('userData: ', userData?.user)
+  const user = userData?.user
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+    reset
+  } = useForm<Inputs>()
+
+  useEffect(() => {
+    if (user) {
+      reset({
+        user: {
+          image: user?.image || '',
+          username: user?.username || '',
+          bio: user?.bio || '',
+          email: user?.email || '',
+          password: ''
+        }
+      })
+    }
+  }, [user])
+
+  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+    if (Object.keys(data?.user).length > 0) {
+      const res = await updateUser.mutateAsync(data)
+      if (!!res) navigate(`/${user?.username}`)
+    }
+  }
+
   return (
     <div className='settings-page'>
       <div className='container page'>
@@ -16,45 +67,21 @@ const Settings = () => {
           <div className='col-md-6 offset-md-3 col-xs-12'>
             <h1 className='text-xs-center'>Your Settings</h1>
 
-            <form>
+            <form onSubmit={handleSubmit(onSubmit)}>
               <fieldset>
-                <fieldset className='form-group'>
-                  <input
-                    className='form-control'
-                    type='text'
-                    placeholder='URL of profile picture'
+                {settingsObjs.map((settingObj: any, c: number) => (
+                  <FieldInput
+                    {...settingObj}
+                    register={register}
+                    isLoading={updateUser?.isLoading}
+                    key={c}
                   />
-                </fieldset>
-                <fieldset className='form-group'>
-                  <input
-                    className='form-control form-control-lg'
-                    type='text'
-                    placeholder='Your Name'
-                  />
-                </fieldset>
-                <fieldset className='form-group'>
-                  <textarea
-                    className='form-control form-control-lg'
-                    rows={8}
-                    placeholder='Short bio about you'
-                  ></textarea>
-                </fieldset>
-                <fieldset className='form-group'>
-                  <input
-                    className='form-control form-control-lg'
-                    type='text'
-                    placeholder='Email'
-                  />
-                </fieldset>
-                <fieldset className='form-group'>
-                  <input
-                    className='form-control form-control-lg'
-                    type='password'
-                    placeholder='Password'
-                  />
-                </fieldset>
-                <button className='btn btn-lg btn-primary pull-xs-right'>
-                  Update Settings
+                ))}
+                <button
+                  className='btn btn-lg btn-primary pull-xs-right'
+                  disabled={updateUser.isLoading}
+                >
+                  {updateUser?.isLoading ? 'Loading...' : 'Update Settings'}
                 </button>
               </fieldset>
             </form>

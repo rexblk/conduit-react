@@ -1,7 +1,8 @@
 import useUserAuth from '../../../hooks/useUserAuth'
 import { SubmitHandler, useForm } from 'react-hook-form'
-import loginObjs from './loginData'
+import { loginObjs } from './loginData'
 import FieldInput from '../../../components/Inputs/FieldInput'
+import { Link } from 'react-router-dom'
 
 type Inputs = {
   user: {
@@ -38,7 +39,7 @@ const Login = () => {
           <div className='col-md-6 offset-md-3 col-xs-12'>
             <h1 className='text-xs-center'>Sign in</h1>
             <p className='text-xs-center'>
-              <a href=''>Need an account?</a>
+              <Link to='/register'>Need an account?</Link>
             </p>
 
             <ul className='error-messages'>
@@ -60,8 +61,13 @@ const Login = () => {
             </ul>
 
             <form onSubmit={handleSubmit(onSubmit)}>
-              {loginObjs.map((loginObj: any) => (
-                <FieldInput {...loginObj} register={register} />
+              {loginObjs.map((loginObj: any, c: number) => (
+                <FieldInput
+                  {...loginObj}
+                  register={register}
+                  isLoading={loginUser?.isLoading}
+                  key={c}
+                />
               ))}
               <button
                 className='btn btn-lg btn-primary pull-xs-right'

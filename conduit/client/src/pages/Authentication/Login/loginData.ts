@@ -1,4 +1,4 @@
-const loginObjs = [
+export const loginObjs = [
   {
     type: 'email',
     placeholder: 'Enter email',
@@ -29,4 +29,66 @@ const loginObjs = [
   }
 ]
 
-export default loginObjs
+export const settingsObjs = [
+  {
+    type: 'text',
+    placeholder: 'Update Image',
+    name: 'user.image',
+    validation: {}
+  },
+  {
+    type: 'text',
+    placeholder: 'Update Username',
+    name: 'user.username',
+    validation: {}
+  },
+  {
+    type: 'text',
+    placeholder: 'Update Bio',
+    name: 'user.bio',
+    validation: {}
+  },
+  {
+    type: 'email',
+    placeholder: 'Update Email',
+    name: 'user.email',
+    validation: {}
+  },
+  {
+    type: 'password',
+    placeholder: 'New Password',
+    name: 'user.password',
+    validation: {}
+  }
+]
+
+export const articleObjs = [
+  {
+    type: 'text',
+    placeholder: 'Article Title',
+    name: 'article.title',
+    validation: { required: { value: true, message: 'Title is required.' } }
+  },
+  {
+    type: 'text',
+    placeholder: "What's this article about?",
+    name: 'article.description',
+    validation: {
+      required: { value: true, message: 'Description is required.' }
+    }
+  },
+  {
+    type: 'text',
+    placeholder: 'Write your article (in markdown)',
+    name: 'article.body',
+    validation: { required: { value: true, message: 'Body is required.' } }
+  },
+  {
+    type: 'text',
+    placeholder: 'Enter tags',
+    name: 'article.tagList',
+    validation: {
+      required: { value: true, message: 'Create at least one tag.' }
+    }
+  }
+]
