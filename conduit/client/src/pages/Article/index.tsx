@@ -13,7 +13,6 @@ const Article = () => {
   const { follow, unfollow, userData } = useProfile({ slug: slug })
   const {
     article: articleData,
-    isArticleLoading,
     favorite,
     unfavorite,
     deleteArticle

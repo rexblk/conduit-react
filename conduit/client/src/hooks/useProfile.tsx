@@ -121,7 +121,9 @@ const useProfile = ({ slug, username }: ProfileTypes) => {
     userData,
     userError,
     profile,
-    isProfileLoading
+    profileError,
+    isProfileLoading,
+    isProfileError
   }
 }
 
