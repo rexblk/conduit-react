@@ -29,7 +29,6 @@ const CreateArticle = () => {
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
     reset
   } = useForm<Inputs>()

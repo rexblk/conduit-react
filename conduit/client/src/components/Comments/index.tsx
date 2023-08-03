@@ -18,7 +18,6 @@ const Comments = ({ slug, isAuth }: any) => {
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
     reset
   } = useForm<Inputs>({
@@ -29,7 +28,7 @@ const Comments = ({ slug, isAuth }: any) => {
     },
     mode: 'onChange'
   })
-  const { userLoading, isUserError, userData, userError } = useProfile({})
+  const { userData } = useProfile({})
   const {
     comments: commentsData,
     createComment,

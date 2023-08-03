@@ -20,8 +20,6 @@ const Home = () => {
     isArticlesLoading,
     articlesLocal,
     isLocalArticlesLoading,
-    isArticlesError,
-    articlesError,
     tags,
     isTagsLoading
   } = useArticle({

@@ -206,6 +206,7 @@ const useArticle = ({
     article,
     articleError,
     isArticleLoading,
+    isArticleError,
     favorite: favoriteMutation,
     unfavorite: unfavoriteMutation,
     publishArticle: publishArticleMutation,
