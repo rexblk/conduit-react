@@ -1,36 +1,44 @@
 export const publicLinks = [
   {
-    to: '/',
-    name: 'Home',
-    icon: null
+    to: "/",
+    name: "Home",
+    icon: null,
   },
   {
-    to: '/login',
-    name: 'Signin'
+    to: "/games",
+    name: "Games",
   },
   {
-    to: '/register',
-    name: 'Signup'
-  }
-]
+    to: "/login",
+    name: "Signin",
+  },
+  {
+    to: "/register",
+    name: "Signup",
+  },
+];
 
 export const privateLinks = [
   {
-    to: '/',
-    name: 'Home'
+    to: "/",
+    name: "Home",
   },
   {
-    to: '/editor',
-    name: 'New Article',
-    icon: 'ion-compose'
+    to: "/games",
+    name: "Games",
   },
   {
-    to: '/settings',
-    name: 'Settings',
-    icon: 'ion-gear-a'
+    to: "/editor",
+    name: "New Article",
+    icon: "ion-compose",
   },
   {
-    to: '/username',
-    name: 'ProfileName'
-  }
-]
+    to: "/settings",
+    name: "Settings",
+    icon: "ion-gear-a",
+  },
+  {
+    to: "/username",
+    name: "ProfileName",
+  },
+];
