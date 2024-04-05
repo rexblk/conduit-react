@@ -24,12 +24,15 @@ const Header: React.FC = () => {
           conduit
         </NavLink>
         <ul className="nav navbar-nav pull-xs-right">
-          {navLinks.map(({ to, name, icon }) => (
+          {navLinks.map(({ to, name, subLinks, icon }) => (
             <li className="nav-item">
               {to === "/username" ? (
                 <span className="nav-link">{name}</span>
               ) : (
-                <NavLink className="nav-link" to={to}>
+                <NavLink
+                  className={subLinks ? "nav-link dropdown-toggle" : "nav-link"}
+                  {...(to && { to })}
+                >
                   {icon && (
                     <>
                       <i className={icon}></i>{" "}

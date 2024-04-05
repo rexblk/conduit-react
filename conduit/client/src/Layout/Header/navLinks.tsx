@@ -5,8 +5,13 @@ export const publicLinks = [
     icon: null,
   },
   {
-    to: "/games",
     name: "Games",
+    subLinks: [
+      {
+        to: "/snek",
+        name: "Snek",
+      },
+    ],
   },
   {
     to: "/login",
